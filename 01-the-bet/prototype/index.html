@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TapeMine Scout</title>
+<style>
+:root{--bg:#0e1116;--panel:#171c24;--line:#262d38;--text:#e6e9ef;--mute:#8b94a5;--accent:#4ade80;--warn:#fbbf24;--bad:#f87171}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,sans-serif}
+main{max-width:1040px;margin:0 auto;padding:20px 16px 56px}
+header{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px}
+h1{margin:0;font-size:22px}h1 span{color:var(--accent)}
+.tag{font-size:12px;color:var(--mute)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:14px}
+h2{margin:0 0 4px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+p.sub{margin:0 0 10px;color:var(--mute);font-size:12px}
+select,button{font:inherit;border-radius:8px;border:1px solid var(--line);padding:9px 12px}
+select{background:var(--bg);color:var(--text);min-width:200px}
+button{background:var(--accent);color:#06210f;font-weight:600;cursor:pointer;border:0}
+button:disabled{opacity:.5;cursor:wait}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+td,th{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--mute);font-weight:500;font-size:12px}
+.num{text-align:center}
+.hot{background:rgba(74,222,128,.18)}.warm{background:rgba(251,191,36,.14)}.cold{background:rgba(248,113,113,.2)}
+.thin{opacity:.45}
+.tell{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.tell:last-child{border:0}
+.rank{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#06210f;font-weight:700;display:flex;align-items:center;justify-content:center}
+.tell b{display:block}
+.counter{color:var(--accent);margin-top:2px}
+.pill{display:inline-block;font-size:11px;border:1px solid var(--line);border-radius:999px;padding:1px 8px;margin:4px 4px 0 0;color:var(--mute)}
+.plan{display:grid;gap:8px}
+@media(min-width:760px){.plan{grid-template-columns:1fr 1fr}}
+.p{border-left:3px solid var(--warn);padding:4px 0 4px 10px;background:var(--bg);border-radius:0 8px 8px 0}
+.p small{color:var(--mute)}
+.legend span{display:inline-block;padding:1px 8px;margin-right:6px;border-radius:4px;font-size:11px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>TapeMine <span>Scout</span></h1>
+  <div class="tag">Prototype · mock data · 5-on-5 flag football</div>
+</header>
+
+<section class="panel">
+  <h2>Opponent</h2>
+  <div class="row">
+    <select id="opp"></select>
+    <button id="go">Generate scouting report</button>
+    <span class="tag" id="meta"></span>
+  </div>
+</section>
+
+<section id="out" class="hidden">
+  <div class="tag" id="status" style="margin-top:14px"></div>
+  <div id="report" class="hidden">
+    <div class="panel">
+      <h2>1 · Top tells (read this if you read nothing else)</h2>
+      <p class="sub">Ranked by how predictable they are and how many plays back them up.</p>
+      <div id="tells"></div>
+    </div>
+    <div class="panel">
+      <h2>2 · Situation playbook</h2>
+      <p class="sub">What they do in each down-and-distance. Greyed rows have too few plays to trust.</p>
+      <div class="scroll"><table id="sit"></table></div>
+    </div>
+    <div class="panel">
+      <h2>3 · Formation → call</h2>
+      <p class="sub">Share of plays from each formation by call. Green = works for them, red = fails.</p>
+      <div class="scroll"><table id="form"></table></div>
+    </div>
+    <div class="panel">
+      <h2>4 · Success by situation vs your defence</h2>
+      <p class="sub">Their success rate (completion or touchdown) against each coverage. Low = what to run.</p>
+      <div class="legend"><span class="hot">&ge;60%</span><span class="warm">35–59%</span><span class="cold">&lt;35%</span></div>
+      <div class="scroll"><table id="def"></table></div>
+    </div>
+    <div class="panel">
+      <h2>5 · Game plan by situation</h2>
+      <div class="plan" id="plan"></div>
+    </div>
+    <div class="panel">
+      <h2>6 · How far to trust this</h2>
+      <div id="trust"></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+// ---------- mock data: seeded, tagged plays [game, formation, situation, call, result, defence] ----------
+const SITS = ["1st & 10","2nd & short","2nd & long","3rd & short","3rd & long","4th & long","Red zone","PAT"];
+const FORMS = ["Trips Right","Bunch Left","Spread","Twins","Empty"];
+const DEFS = ["Man","Zone","Blitz"];
+function rng(seed){return()=>((seed=Math.imul(seed^seed>>>15,2246822507)+374761393|0)>>>0)/4294967296}
+function pick(r,pairs){let t=pairs.reduce((a,p)=>a+p[1],0)*r(),s=0;for(const [v,w] of pairs){s+=w;if(t<=s)return v}return pairs[0][0]}
+// habits: per situation -> formation weights, call weights
+const TEAMS = {
+  "Berlin Bears":{seed:7,games:["vs Hamburg Hawks","vs Köln Kings","vs Munich Mavs","vs Leipzig Lions","vs Dresden Dukes"],habit:{
+    "1st & 10":[[["Spread",5],["Trips Right",3],["Bunch Left",2]],[["Screen",4],["Scramble",3],["Deep post",2],["Quick slant",2]]],
+    "2nd & short":[[["Trips Right",8],["Twins",2]],[["Quick slant",8],["Run",2]]],
+    "2nd & long":[[["Spread",5],["Trips Right",4]],[["Deep post",4],["Screen",4],["Corner",2]]],
+    "3rd & short":[[["Trips Right",9],["Bunch Left",1]],[["Quick slant",9],["Run",1]]],
+    "3rd & long":[[["Trips Right",5],["Spread",5]],[["Deep post",5],["Corner",3],["Scramble",2]]],
+    "4th & long":[[["Trips Right",9],["Empty",1]],[["Deep post",9],["Corner",1]]],
+    "Red zone":[[["Bunch Left",7],["Twins",3]],[["Fade",6],["Quick slant",3],["Run",1]]],
+    "PAT":[[["Bunch Left",10]],[["Fade",9],["Quick slant",1]]]},
+   edge:{Blitz:.1,Man:.62,Zone:.5}},
+  "Köln Kings":{seed:21,games:["vs Berlin Bears","vs Hamburg Hawks","vs Munich Mavs","vs Leipzig Lions"],habit:{
+    "1st & 10":[[["Spread",7],["Twins",3]],[["Run",5],["Quick slant",3],["Screen",2]]],
+    "2nd & short":[[["Spread",6],["Twins",4]],[["Run",6],["Quick slant",3],["Corner",1]]],
+    "2nd & long":[[["Empty",5],["Spread",5]],[["Corner",4],["Deep post",3],["Screen",3]]],
+    "3rd & short":[[["Spread",5],["Twins",5]],[["Run",5],["Quick slant",5]]],
+    "3rd & long":[[["Empty",7],["Spread",3]],[["Corner",5],["Deep post",5]]],
+    "4th & long":[[["Empty",10]],[["Deep post",5],["Corner",5]]],
+    "Red zone":[[["Twins",6],["Spread",4]],[["Fade",5],["Run",3],["Quick slant",2]]],
+    "PAT":[[["Twins",10]],[["Quick slant",6],["Fade",4]]]},
+   edge:{Blitz:.4,Man:.35,Zone:.6}}
+};
+const PLAYS = {};
+for(const [name,t] of Object.entries(TEAMS)){
+  const r=rng(t.seed),out=[];
+  t.games.forEach((_,g)=>{for(let i=0;i<15;i++){
+    const s=pick(r,SITS.map(x=>[x,{"1st & 10":4,"2nd & short":2,"2nd & long":3,"3rd & short":2,"3rd & long":3,"4th & long":1,"Red zone":2,"PAT":1}[x]]));
+    const [fw,cw]=t.habit[s],f=pick(r,fw),c=pick(r,cw),d=pick(r,DEFS.map(x=>[x,1]));
+    let p=t.edge[d]; if(s==="PAT"||s==="Red zone") p+=.05; if(s.includes("long")) p-=.1;
+    const x=r(); const res=x<p?(r()<.15?"touchdown":"completion"):(r()<.35?(d==="Blitz"?"sack":"interception"):"incomplete");
+    out.push([g,f,s,c,res,d]);
+  }});
+  PLAYS[name]=out;
+}
+
+// ---------- analysis ----------
+const $=id=>document.getElementById(id);
+const pct=(n,d)=>d?Math.round(100*n/d):0;
+const ok=p=>p[4]==="completion"||p[4]==="touchdown";
+const grp=(a,k)=>a.reduce((m,p)=>((m[k(p)]??=[]).push(p),m),{});
+const MIN=4;
+const COUNTER={"Quick slant":"press the slot and jump the short hook","Deep post":"keep a safety deep middle, take away the post","Fade":"bracket the back-shoulder, rotate a corner to the pylon","Screen":"contain the flat, rush the edge early","Scramble":"spy the QB, keep the rush contained","Run":"keep an extra player in the box","Corner":"cloud the sideline, squat the flat"};
+const cls=r=>r>=60?"hot":r>=35?"warm":"cold";
+const chip=p=>`<span class="pill">G${p[0]+1} · ${p[1]} · ${p[2]} · ${p[3]} → ${p[4]}</span>`;
+const topBy=(arr,k)=>Object.entries(grp(arr,k)).sort((a,b)=>b[1].length-a[1].length)[0];
+
+function analyse(P){
+  const bySit=SITS.map(s=>{
+    const ps=P.filter(p=>p[2]===s),n=ps.length; if(!n) return {s,n:0};
+    const [f,fp]=topBy(ps,p=>p[1]),[c,cp]=topBy(ps,p=>p[3]);
+    return {s,n,ps,f,fs:pct(fp.length,n),c,cs:pct(cp.length,n),cps:cp,succ:pct(ps.filter(ok).length,n)};
+  });
+  const tells=bySit.filter(x=>x.n>=MIN&&x.cs>=55).map(x=>({...x,score:x.cs*Math.log(x.n+1)}));
+  // formation tells
+  const formTells=[];
+  FORMS.forEach(f=>{const ps=P.filter(p=>p[1]===f);if(ps.length>=MIN){const [c,cp]=topBy(ps,p=>p[3]);const s=pct(cp.length,ps.length);if(s>=65)formTells.push({f,c,s,n:ps.length,cp,score:s*Math.log(ps.length+1)*0.9})}});
+  // weakness cells
+  const weak=[];
+  SITS.forEach(s=>DEFS.forEach(d=>{const ps=P.filter(p=>p[2]===s&&p[5]===d);if(ps.length>=3){const r=pct(ps.filter(ok).length,ps.length);if(r<=25)weak.push({s,d,r,n:ps.length,ps,score:(60-r)*Math.log(ps.length+1)})}}));
+  const defOverall=DEFS.map(d=>{const ps=P.filter(p=>p[5]===d);return {d,n:ps.length,r:pct(ps.filter(ok).length,ps.length)}}).sort((a,b)=>a.r-b.r);
+  return {bySit,tells,formTells,weak:weak.sort((a,b)=>b.score-a.score),defOverall};
+}
+
+// ---------- render ----------
+function render(name){
+  const P=PLAYS[name],A=analyse(P),G=TEAMS[name].games.length;
+  // 1 tells
+  const items=[
+    ...A.tells.map(t=>({score:t.score,h:`${t.s}: ${t.cs}% ${t.c}`,b:`${t.cps.length} of ${t.n} plays. Usually from ${t.f} (${t.fs}%). Success ${t.succ}%.`,ex:t.cps,ctr:COUNTER[t.c]})),
+    ...A.formTells.map(t=>({score:t.score,h:`${t.f} means ${t.c} (${t.s}%)`,b:`${t.n} plays from this formation.`,ex:t.cp,ctr:COUNTER[t.c]})),
+    ...A.weak.slice(0,2).map(w=>({score:w.score,h:`${w.s} vs ${w.d}: only ${w.r}% success`,b:`${w.n} plays. Their offence breaks down here.`,ex:w.ps.filter(p=>!ok(p)),ctr:`Show ${w.d} on ${w.s}.`}))
+  ].sort((a,b)=>b.score-a.score).slice(0,5);
+  $("tells").innerHTML=items.map((t,i)=>`<div class="tell"><div class="rank">${i+1}</div><div><b>${t.h}</b>${t.b}<div class="counter">→ ${t.ctr}</div>${t.ex.slice(0,3).map(chip).join("")}</div></div>`).join("");
+  // 2 situations
+  $("sit").innerHTML=`<tr><th>Situation</th><th class="num">Plays</th><th>Top formation</th><th>Top call</th><th class="num">Success</th><th></th></tr>`+
+    A.bySit.map(x=>x.n?`<tr class="${x.n<MIN?"thin":""}"><td>${x.s}</td><td class="num">${x.n}</td><td>${x.f} ${x.fs}%</td><td>${x.c} ${x.cs}%</td><td class="num ${cls(x.succ)}">${x.succ}%</td><td>${x.n>=MIN&&x.cs>=55?"⚑ tell":x.n<MIN?"thin sample":""}</td></tr>`:`<tr class="thin"><td>${x.s}</td><td class="num">0</td><td colspan=4>no data</td></tr>`).join("");
+  // 3 formation x call
+  const calls=[...new Set(P.map(p=>p[3]))].sort();
+  $("form").innerHTML=`<tr><th>Formation</th><th class="num">Plays</th>${calls.map(c=>`<th class="num">${c}</th>`).join("")}</tr>`+
+    FORMS.map(f=>{const ps=P.filter(p=>p[1]===f);if(!ps.length)return"";
+      return `<tr class="${ps.length<MIN?"thin":""}"><td>${f}</td><td class="num">${ps.length}</td>${calls.map(c=>{const q=ps.filter(p=>p[3]===c);if(!q.length)return`<td class="num tag">–</td>`;return `<td class="num ${cls(pct(q.filter(ok).length,q.length))}">${pct(q.length,ps.length)}%</td>`}).join("")}</tr>`}).join("");
+  // 4 defence
+  $("def").innerHTML=`<tr><th>Situation</th>${DEFS.map(d=>`<th class="num">vs ${d}</th>`).join("")}</tr>`+
+    SITS.map(s=>`<tr><td>${s}</td>${DEFS.map(d=>{const ps=P.filter(p=>p[2]===s&&p[5]===d);if(!ps.length)return`<td class="num tag">–</td>`;const r=pct(ps.filter(ok).length,ps.length);return `<td class="num ${ps.length<3?"thin":cls(r)}">${r}% <small>(${ps.length})</small></td>`}).join("")}</tr>`).join("")+
+    `<tr><td><b>All</b></td>${DEFS.map(d=>{const o=A.defOverall.find(x=>x.d===d);return`<td class="num ${cls(o.r)}"><b>${o.r}%</b> <small>(${o.n})</small></td>`}).join("")}</tr>`;
+  // 5 plan
+  const plan=A.tells.sort((a,b)=>b.score-a.score).map(t=>`<div class="p"><b>${t.s}</b><br>Expect ${t.c}${t.fs>=55?` from ${t.f}`:""}. ${COUNTER[t.c][0].toUpperCase()+COUNTER[t.c].slice(1)}.<br><small>${t.cps.length}/${t.n} plays</small></div>`);
+  const best=A.defOverall[0];
+  plan.push(`<div class="p"><b>Base coverage</b><br>Lean ${best.d}: they succeed only ${best.r}% against it (${best.n} plays).<br><small>use it when you can't predict the call</small></div>`);
+  $("plan").innerHTML=plan.join("");
+  // 6 trust
+  const thin=A.bySit.filter(x=>x.n<MIN).map(x=>x.s);
+  $("trust").innerHTML=`<p>${P.length} tagged plays across ${G} games. ${thin.length?`Thin or missing: <b>${thin.join(", ")}</b>. Treat those with caution.`:"Every situation has enough plays."}</p><p class="tag">Tip: tag ${G+1}+ games and re-run to firm up the weak spots. Mock data in this prototype, no real AI call yet.</p>`;
+}
+
+$("opp").innerHTML=Object.keys(TEAMS).map(o=>`<option>${o}</option>`).join("");
+const meta=()=>{const n=$("opp").value;$("meta").textContent=`${PLAYS[n].length} tagged plays · ${TEAMS[n].games.length} games`};
+$("opp").onchange=meta;meta();
+$("go").onclick=()=>{
+  const name=$("opp").value;$("go").disabled=true;$("out").classList.remove("hidden");$("report").classList.add("hidden");
+  const steps=["Reading tagged plays…","Grouping by situation and formation…","Testing against each coverage…","Ranking tells…"];let i=0;$("status").textContent=steps[0];
+  const t=setInterval(()=>{if(++i<steps.length){$("status").textContent=steps[i];return}
+    clearInterval(t);render(name);$("status").textContent=`Scouting report · ${name} · about a 3 minute read`;
+    $("report").classList.remove("hidden");$("go").disabled=false},600);
+};
+</script>
+</body>
+</html>

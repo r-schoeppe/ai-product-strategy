@@ -8,7 +8,7 @@
 
 | Component | Module | Status | Key Artifact |
 |-----------|--------|--------|-------------|
-| **The Bet** | M1 | [ ] | `01-the-bet/` |
+| **The Bet** | M1 | [x] | `01-the-bet/` |
 | **The Moat** | M2 | [ ] | `02-the-moat/` |
 | **The Margin** | M3 | [ ] | `03-the-margin/` |
 | **The Contract** | M4 | [ ] | `04-the-contract/` |
@@ -21,13 +21,13 @@
 
 **What we're building, for whom, why now.**
 
-- **Product:**
-- **AI Value Archetype:**
-- **Vulnerability Scores:** Moat __/5 · Data __/5 · Platform __/5
-- **Top Risk:**
-- **Confidence:** H / M / L
-- **Prototype:** [link]
-- **Kill Criteria:**
+- **Product:** TapeMine, 5-on-5 flag football video review, with the AI Scout scouting report for coaches
+- **AI Value Archetype:** Oracle
+- **Vulnerability Scores:** Moat 2/5 · Data 2/5 · Platform 3/5
+- **Top Risk:** The AI summary alone is easy to copy; the moat depends on league relationships and a tag-data loop that does not exist yet
+- **Confidence:** M
+- **Prototype:** [`01-the-bet/prototype/index.html`](01-the-bet/prototype/index.html)
+- **Kill Criteria:** In a 5-team pilot, fewer than 3 coaches read the report before a game for 2 straight weeks, or tendencies are rated wrong in more than 1 of 3 reports
 
 → Details: [`01-the-bet/`](01-the-bet/)
 

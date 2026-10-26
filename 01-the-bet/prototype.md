@@ -1,19 +1,19 @@
 # The Prototype Bet
 
 ## What I Built
-<!-- One sentence: what does this prototype demonstrate? -->
+A one-page dark-theme prototype where a flag football coach picks an opponent and gets a scouting report from tagged plays: ranked tells, a situation playbook, formation-to-call and situation-by-defence matrices, and a game plan. The data is mock and the report is computed in code, not by an LLM yet.
 
 ## Tool Used
-<!-- v0 / Cursor / Lovable / other -->
+Claude Code (other)
 
 ## Prototype Link
-<!-- Paste the shareable URL -->
+[`01-the-bet/prototype/index.html`](prototype/index.html) (single-file HTML, open in any browser; mock data)
 
 ## AI Value Archetype
-<!-- Automator / Copilot / Oracle / Creator / Orchestrator -->
+Oracle (it turns tagged play history into an insight about what an opponent will likely do).
 
 ## The Bet in One Sentence
-<!-- What you're building, for whom, why now -->
+Flag football coaches will prepare for opponents with a TapeMine AI scouting summary built from tagged play video, because league-supplied clips now make that scouting data available without manual film work.
 
 ## Kill Criteria
-<!-- When would you stop? What evidence would kill this bet? -->
+Stop if, in a pilot with 5 teams, fewer than 3 coaches use the scouting summary before a game for two straight weeks, or if coaches rate its tendencies as wrong or unhelpful in more than 1 of 3 summaries. Stop too if a general video AI produces an equally good summary from the same clips with no tagging.
