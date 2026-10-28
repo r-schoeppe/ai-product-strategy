@@ -9,7 +9,7 @@
 | Component | Module | Status | Key Artifact |
 |-----------|--------|--------|-------------|
 | **The Bet** | M1 | [x] | `01-the-bet/` |
-| **The Moat** | M2 | [ ] | `02-the-moat/` |
+| **The Moat** | M2 | [x] | `02-the-moat/` |
 | **The Margin** | M3 | [ ] | `03-the-margin/` |
 | **The Contract** | M4 | [ ] | `04-the-contract/` |
 | **The Guardrails** | M5 | [ ] | `05-the-guardrails/` |
@@ -37,11 +37,11 @@
 
 **Why this won't get copied in 6 months.**
 
-- **Data Flywheel Score:** __/20
-- **Weakest Loop:**
-- **Competitive Position:** [describe axes + placement]
-- **Encroachment Defense:**
-- **Vendor Portability:** Ready / Partial / Locked
+- **Data Flywheel Score:** 5/20
+- **Weakest Loop:** Correction (tied with Preference and Network at 1/5)
+- **Competitive Position:** Axes: price for amateur teams (cheap to expensive) and depth in 5-on-5 flag football (specialised to generic). TapeMine: cheap and flag-specialised. Hudl: expensive and tackle-focused. WatchGameFilm: mid-priced, tackle-focused, weaker on usability.
+- **Encroachment Defense:** Out-specialise on 5-on-5 flag football, stay far cheaper than competitors for amateur teams, and win on usability and performance. Top threats: Hudl Assist (70% of value at risk), WatchGameFilm (60%), Google (20%).
+- **Vendor Portability:** Partial
 
 → Details: [`02-the-moat/`](02-the-moat/)
 
