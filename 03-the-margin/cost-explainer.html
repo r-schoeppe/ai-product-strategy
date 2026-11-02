@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TapeMine Margin Workbook</title>
+<style>
+:root{--bg:#0e1116;--panel:#171c24;--line:#262d38;--text:#e6e9ef;--mute:#8b94a5;--accent:#4ade80;--warn:#fbbf24;--bad:#f87171;--blue:#60a5fa;--vid:#a78bfa;--sto:#f59e0b;--enc:#f472b6}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:22px 16px 70px}
+h1{margin:0;font-size:24px}h1 span{color:var(--accent)}
+h2{margin:0 0 4px;font-size:18px}
+h3{margin:16px 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}
+.lead{color:var(--mute);margin:4px 0 0}
+.tag{font-size:12px;color:var(--mute)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:16px}
+.num{display:inline-block;background:var(--accent);color:#06210f;font-weight:800;border-radius:50%;width:26px;height:26px;text-align:center;line-height:26px;margin-right:8px;font-size:14px}
+.say{border-left:3px solid var(--accent);background:var(--bg);padding:8px 12px;margin-top:10px;border-radius:0 8px 8px 0}
+.say b.h{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:.05em;display:block}
+.warn{border-left-color:var(--warn)}.warn b.h{color:var(--warn)}
+.grid{display:grid;gap:14px}
+@media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+.ctl{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;margin:8px 0}
+.ctl output{font-weight:700;font-variant-numeric:tabular-nums}
+.ctl input[type=range]{grid-column:1/3;width:100%;accent-color:var(--accent)}
+.ctl small{grid-column:1/3;color:var(--mute);font-size:12px;margin-top:-2px}
+select{font:inherit;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+table{width:100%;border-collapse:collapse}
+td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:12px;color:var(--mute);font-weight:500}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+.big{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.kpis{display:grid;gap:10px;grid-template-columns:repeat(2,1fr)}
+@media(min-width:760px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px}
+.kpi small{color:var(--mute);display:block}
+.good{color:var(--accent)}.mid{color:var(--warn)}.bad{color:var(--bad)}
+.legend span{display:inline-block;margin-right:14px;font-size:13px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+button{font:inherit;border-radius:8px;border:1px solid var(--line);padding:6px 14px;background:var(--bg);color:var(--text);cursor:pointer}
+button:hover{border-color:var(--accent)}
+.tabs{display:flex;gap:6px;margin-top:16px;flex-wrap:wrap;align-items:center;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5}
+.tabs button.on{background:var(--accent);color:#06210f;border-color:var(--accent);font-weight:700}
+.tabs label{margin-left:auto;font-size:13px;color:var(--mute);display:flex;gap:6px;align-items:center}
+.tabpane{display:none}.tabpane.on{display:block}
+iframe.form{width:100%;border:1px solid var(--line);border-radius:12px;background:#0b0c12;margin-top:14px;min-height:700px}
+svg{width:100%;height:auto;display:block}
+.cards{display:grid;gap:10px}
+@media(min-width:760px){.cards{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px}
+.card b.t{display:inline-block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;border-radius:999px;padding:1px 10px;margin-bottom:6px}
+.t-l{background:rgba(74,222,128,.18);color:var(--accent)}.t-f{background:rgba(96,165,250,.18);color:var(--blue)}.t-k{background:rgba(248,113,113,.18);color:var(--bad)}
+tr.rec td{background:rgba(74,222,128,.08)}
+textarea{width:100%;min-height:150px;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit}
+p{margin:6px 0}
+</style>
+</head>
+<body>
+<main>
+<h1>TapeMine <span>Margin Workbook</span></h1>
+<p class="lead">Module 3, one tab per exercise. Move the sliders and see the numbers change. The last tab is the finished cost-curve, with the summary you can say out loud.</p>
+<p class="tag">Money in € (Mux prices are USD, treated as equal). All prices are rough placeholders to check on the vendors' pages.</p>
+
+<div class="tabs" id="tabs">
+  <button class="on" data-t="walk">0 Basics</button>
+  <button data-t="pack">1 Packaging</button>
+  <button data-t="margin">2 Margin Calculator</button>
+  <button data-t="curve">3 Cost Curve</button>
+  <button data-t="pricing">4 Pricing</button>
+  <button data-t="board">5 Board One-Pager</button>
+  <button data-t="summary">Summary</button>
+  <label><input type="checkbox" id="sync" checked> Keep forms filled from my numbers</label>
+</div>
+
+<!-- 0 BASICS -->
+<div class="tabpane on" id="tab-walk">
+  <section class="panel">
+    <h2><span class="num">0</span>The one-line answer (one team, one month)</h2>
+    <div class="kpis">
+      <div class="kpi"><small>Revenue per team</small><span class="big" id="k-rev"></span></div>
+      <div class="kpi"><small>Cost per team</small><span class="big" id="k-cost"></span></div>
+      <div class="kpi"><small>Gross margin</small><span class="big" id="k-gm"></span></div>
+      <div class="kpi"><small>Video share of cost</small><span class="big" id="k-share"></span></div>
+    </div>
+    <div class="say"><b class="h">How to say it</b><span id="oneline"></span></div>
+  </section>
+  <section class="panel">
+    <h2>Assumptions</h2>
+    <p class="lead">These feed every tab.</p>
+    <div class="grid g2"><div id="c-team"></div><div id="c-mux"></div></div>
+  </section>
+  <section class="panel">
+    <h2>Where one team's money goes each month</h2>
+    <div id="bar"></div>
+    <table id="costs" style="margin-top:10px"></table>
+    <div class="grid g2" style="margin-top:6px">
+      <div class="say"><b class="h">Plain English</b>
+        <p><b>Encoding:</b> Mux converts each play so it plays everywhere. Free on the basic tier.</p>
+        <p><b>Storage:</b> you pay every month for every minute of film still stored, so it grows through the season.</p>
+        <p><b>Delivery:</b> you pay each time a minute is watched.</p>
+        <p><b>AI:</b> ordinary code computes the tendencies, the model only writes them up, so it is small.</p></div>
+      <div><h3>Storage builds up over the season</h3><div id="stor"></div><div class="tag" id="stornote"></div></div>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>What if things go wrong?</h2>
+    <table id="stress"></table>
+    <h3>Margin as video cost grows</h3><div id="curve"></div>
+    <div class="say warn"><b class="h">Why it matters</b><span id="stressnote"></span></div>
+  </section>
+</div>
+
+<!-- 1 PACKAGING -->
+<div class="tabpane" id="tab-pack">
+  <section class="panel">
+    <h2><span class="num">1</span>Packaging: Leader, Filler, Killer</h2>
+    <p class="lead">Decide what is in the base plan and what is sold separately. The 70% rule: if more than 70% of teams use a feature, bundle it. Below that it is an add-on.</p>
+    <div class="cards" style="margin-top:12px">
+      <div class="card"><b class="t t-l">Leader</b><div><b>Scout summary</b></div><div class="tag">What coaches pay for. Cheap to run, so it goes in the base plan.</div></div>
+      <div class="card"><b class="t t-f">Filler</b><div><b>None at the moment</b></div><div class="tag">Candidates later: inconsistent-tag detection, suggested playlists to annotate.</div></div>
+      <div class="card"><b class="t t-k">Killer</b><div><b>Gameplan conversation</b></div><div class="tag">Heavy, grows with use, so it is a paid season-pass add-on.</div></div>
+    </div>
+    <h3>How many teams would use the Killer?</h3>
+    <div id="c-pack"></div>
+    <div id="gauge"></div>
+    <div class="say"><b class="h">Verdict</b><span id="packverdict"></span></div>
+    <div class="say warn"><b class="h">Honest note</b>Scout is called Leader by value and is cheap to run. The Killer is the one whose cost grows with every turn of the chat, so it is the feature that needs its own price.</div>
+  </section>
+</div>
+
+<!-- 2 MARGIN -->
+<div class="tabpane" id="tab-margin">
+  <section class="panel"><h2>Soft-cap check</h2><div class="kpis" style="grid-template-columns:repeat(3,1fr)"><div class="kpi"><small>Margin, typical use</small><span class="big" id="mc1"></span></div><div class="kpi"><small>Margin, all pass-holders at the cap</small><span class="big" id="mc2"></span></div><div class="kpi"><small>Margin with 3x use, capped</small><span class="big" id="mc3"></span></div></div><p class="tag">The calculator below only stresses AI cost. This shows what the soft cap protects.</p></section>
+  <p class="lead" style="margin-top:14px">Your original Margin Calculator, filled from this workbook for the <b>whole product</b>: Scout reports plus the average Killer conversations per team, blended into one cost per request. Video cost goes into "Non-AI COGS". Unticking the box above lets you type your own values.</p>
+  <iframe class="form" id="fr-margin" title="Margin Calculator"></iframe>
+</div>
+
+<!-- 3 CURVE -->
+<div class="tabpane" id="tab-curve">
+  <section class="panel">
+    <h2><span class="num">3</span>Build your cost curve: features, tiers, blended cost</h2>
+    <p class="lead">Each AI feature runs on a model tier. Small is cheap and fast, frontier is strong and costs about 20x more.</p>
+    <div class="grid g2"><div id="c-tier"></div>
+      <div class="say"><b class="h">How to read it</b>Tier prices are per 1M tokens. Medium is the price from the Basics tab. The point of a cascade is to keep the expensive model for the few steps that need it.</div></div>
+    <h3>Features, tier and cost</h3>
+    <div style="overflow-x:auto"><table id="feat"></table></div>
+    <div class="tag" id="featnote"></div>
+  </section>
+  <section class="panel">
+    <h2>Cascade lab: the gameplan conversation</h2>
+    <p class="lead">A full gameplan needs structure, so I split every chat turn into three types and compared five ways to route them, across four game situations.</p>
+    <div class="grid g3">
+      <div class="card"><b>L · Lookup</b><div class="tag">Answer from the computed tendencies ("what do they run on 3rd and short?"). Needs no deep reasoning.</div></div>
+      <div class="card"><b>E · Explain</b><div class="tag">Compare, explain why, weigh options. Needs decent reasoning.</div></div>
+      <div class="card"><b>S · Synthesis</b><div class="tag">Write the structured gameplan, by situation. The turn where quality matters most.</div></div>
+    </div>
+    <h3>The four game situations (cost per conversation, by policy)</h3>
+    <div style="overflow-x:auto"><table id="sit"></table></div>
+    <h3>Policies, blended over the situation mix</h3>
+    <div style="overflow-x:auto"><table id="pol"></table></div>
+    <div class="ctl" style="margin-top:12px"><label for="polsel">Policy used in the rest of the workbook</label><span><select id="polsel"></select></span></div>
+    <div class="say"><b class="h">My recommendation</b><span id="polrec"></span></div>
+    <div class="say warn"><b class="h">Why not the 80/20 the slides show</b>A blind 80/20 split sends the writing of the gameplan to the small model 80% of the time. It is cheaper, but it breaks quality exactly where coaches look. Route by the type of turn, not by a fixed percentage.</div>
+  </section>
+</div>
+
+<!-- 4 PRICING -->
+<div class="tabpane" id="tab-pricing">
+  <section class="panel">
+    <h2><span class="num">4</span>Price the work your AI does</h2>
+    <p class="lead">Scout is in the €10 base. The gameplan add-on is an <b>outcome-based season pass</b>: one price for the season's prep, pooled across all games, with a soft cap. Cost per conversation comes from the policy chosen on the Cost Curve tab.</p>
+    <div class="grid g2">
+      <div id="c-price"></div>
+      <div>
+        <div class="kpis" style="grid-template-columns:repeat(2,1fr)">
+          <div class="kpi"><small>Cost per conversation</small><span class="big" id="k-ccost"></span></div>
+          <div class="kpi"><small>Pass margin, typical use</small><span class="big" id="k-cm"></span></div>
+          <div class="kpi"><small>Cost at the soft cap (season)</small><span class="big" id="k-capcost"></span></div>
+          <div class="kpi"><small>Pass margin at the cap</small><span class="big" id="k-capm"></span></div>
+        </div>
+        <div class="say warn" style="margin-top:10px"><b class="h">Watch for</b><span id="cwatch"></span></div>
+      </div>
+    </div>
+    <h3>Usage versus margin on the pass</h3><div id="usechart"></div>
+    <h3>Why a season pass, and what the soft cap is</h3>
+    <div class="grid g2">
+      <div class="say"><b class="h">Why a season pass</b><p>Coaches prep in bursts: a bye week is quiet, a playoff week is heavy. A monthly meter would charge unevenly and make coaches ration the chat. A pass pools the whole season, so they use it when the games are.</p><p>It is outcome-based: they pay for being prepared for every game, not for tokens or chat turns.</p></div>
+      <div class="say"><b class="h">What the soft cap is</b><p>A threshold that changes behaviour, not a wall. A coach who keeps iterating is often telling us the first draft was not good enough, so we ask what was missed instead of stopping them.</p><p id="capsteps"></p></div>
+    </div>
+  </section>
+  <p class="lead" style="margin-top:14px">Your original Pricing Strategy Designer, filled with my draft: Penetrate, Outcome / Resolution, gameplan season pass. Units per user are the share of teams buying a pass, divided by the season's months, because the form is monthly.</p>
+  <iframe class="form" id="fr-pricing" title="Pricing Strategy Designer"></iframe>
+</div>
+
+<!-- 5 BOARD -->
+<div class="tabpane" id="tab-board">
+  <section class="panel">
+    <h2><span class="num">5</span>Board one-pager: before and after</h2>
+    <div class="grid g2"><div id="c-board"></div>
+      <div class="say"><b class="h">Reading it</b>Before: a €5 base for the video library, with the same video cost. After: the €10 base plus metered gameplan conversations, with a small AI cost added.</div></div>
+    <div id="boardviz"></div>
+    <table id="boardtab" style="margin-top:8px"></table>
+    <div class="kpis" style="margin-top:12px;grid-template-columns:repeat(3,1fr)"><div class="kpi"><small>Gross margin, before to after</small><span class="big" id="bh1"></span></div><div class="kpi"><small>Gross profit / month</small><span class="big" id="bh2"></span></div><div class="kpi"><small>Worst-case floor</small><span class="big" id="bh3"></span></div></div>
+    <div class="say"><b class="h">Narrative</b><span id="boardtxt"></span></div>
+    <div class="say warn"><b class="h">Risks we are carrying</b><ul id="risks" style="margin:6px 0 0;padding-left:18px"></ul></div>
+  </section>
+</div>
+
+<!-- SUMMARY -->
+<div class="tabpane" id="tab-summary">
+  <section class="panel">
+    <h2>Say it in 30 seconds</h2>
+    <textarea id="talk" readonly></textarea>
+    <div style="margin-top:8px"><button id="copytalk">Copy</button> <button id="copymd">Copy cost-curve.md</button></div>
+  </section>
+  <div id="sumviz"></div>
+</div>
+</main>
+
+<script>
+(function(){
+var E=function(i){return document.getElementById(i)};
+var fmt=function(n,d){return Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})};
+var eur=function(n,d){return '€'+fmt(n,d===undefined?2:d)};
+var pct=function(n,d){return fmt(n,d===undefined?0:d)+'%'};
+var forms=["\u003c!DOCTYPE html>\n\u003chtml lang=\"en\" class=\"aipsc-proto support-proto\">\n\u003chead>\n\u003cmeta charset=\"UTF-8\">\n\u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\u003ctitle>M3, Margin Calculator\u003c/title>\n\u003clink rel=\"stylesheet\" href=\"../../../../assets/fonts/ps-fonts.css\">\n\u003clink rel=\"stylesheet\" href=\"https://product-school-platform.github.io/ps-content-library/assets/fonts/ps-fonts.css\">\n\u003cstyle>\n  @import url('https://product-school-platform.github.io/ps-content-library/assets/fonts/ps-fonts.css');\n:root {\n    --bg: #0b0b10; --surface: #13131a; --surface2: #1a1a24;\n    --border: #252535; --border-hi: #35354a;\n    --text: #ffffff; --text-dim: #7a7a9a; --text-muted: #55556a;\n    --blue: #5b8def; --green: #3dd68c; --yellow: #f0c040; --red: #ef5b5b; --purple: #a07be8;\n    --blue-bg: rgba(91,141,239,0.08); --green-bg: rgba(61,214,140,0.08);\n    --yellow-bg: rgba(240,192,64,0.08); --red-bg: rgba(239,91,91,0.08);\n    --radius: 10px; --radius-lg: 14px;\n  }\n\n  * { margin:0; padding:0; box-sizing:border-box; }\n  html { scroll-behavior: smooth; }\n  body {\n    font-family: 'Saans', -apple-system, sans-serif;\n    background: var(--bg); color: var(--text);\n    min-height: 100vh; padding: 40px 20px 80px;\n    -webkit-font-smoothing: antialiased;\n  }\n\n  .page { max-width: 720px; margin: 0 auto; }\n\n  .header { text-align: center; margin-bottom: 36px; }\n  .badge {\n    display: inline-block; font-size: 10px; font-weight: 700;\n    text-transform: uppercase; letter-spacing: 0.12em;\n    color: var(--green); background: var(--green-bg);\n    border: 1px solid rgba(61,214,140,0.15);\n    padding: 5px 14px; border-radius: 20px; margin-bottom: 14px;\n  }\n  .header h1 {\n    font-size: 30px; font-weight: 800; color: #fff;\n    margin-bottom: 8px; letter-spacing: -0.02em;\n  }\n  .header p { font-size: 14px; color: var(--text-dim); line-height: 1.6; max-width: 540px; margin: 0 auto; }\n\n  .card {\n    background: var(--surface); border: 1px solid var(--border);\n    border-radius: var(--radius-lg); margin-bottom: 20px;\n    overflow: hidden; transition: border-color 0.2s;\n  }\n  .card:hover { border-color: var(--border-hi); }\n\n  .card-head {\n    padding: 18px 24px; display: flex; align-items: center; gap: 14px;\n    border-bottom: 1px solid var(--border);\n  }\n  .card-icon {\n    width: 32px; height: 32px; border-radius: 8px;\n    display: flex; align-items: center; justify-content: center;\n    font-size: 14px; font-weight: 800; color: #fff; flex-shrink: 0;\n  }\n  .card-title { font-size: 16px; font-weight: 700; color: #fff; }\n  .card-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }\n  .card-body { padding: 20px 24px 24px; }\n\n  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }\n  .input-grid.three { grid-template-columns: 1fr 1fr 1fr; }\n\n  .field label {\n    display: block; font-size: 11px; font-weight: 600;\n    color: var(--text-dim); text-transform: uppercase;\n    letter-spacing: 0.06em; margin-bottom: 6px;\n  }\n  .field input, .field select {\n    width: 100%; font-family: 'Antarctican Mono', monospace;\n    font-size: 15px; font-weight: 500; color: #fff;\n    background: var(--surface2); border: 1px solid var(--border);\n    border-radius: 8px; padding: 10px 14px;\n    transition: border-color 0.2s, box-shadow 0.2s;\n    outline: none;\n  }\n  .field input:focus, .field select:focus {\n    border-color: var(--blue); box-shadow: 0 0 0 3px rgba(91,141,239,0.12);\n  }\n  .field input::placeholder { color: var(--text-muted); }\n  .field .unit { font-size: 11px; color: var(--text-muted); margin-top: 4px; }\n\n  .results {\n    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;\n    margin-top: 20px;\n  }\n  .result-box {\n    background: var(--surface2); border: 1px solid var(--border);\n    border-radius: var(--radius); padding: 16px; text-align: center;\n    transition: border-color 0.3s, background 0.3s;\n  }\n  .result-box .rb-label {\n    font-size: 10px; font-weight: 700; text-transform: uppercase;\n    letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 6px;\n  }\n  .result-box .rb-value {\n    font-family: 'Antarctican Mono', monospace;\n    font-size: 26px; font-weight: 700; color: #fff;\n    transition: color 0.3s;\n  }\n  .result-box .rb-sub {\n    font-size: 11px; color: var(--text-dim); margin-top: 4px;\n  }\n\n  .result-box.healthy { border-color: rgba(61,214,140,0.25); background: var(--green-bg); }\n  .result-box.healthy .rb-value { color: var(--green); }\n  .result-box.warning { border-color: rgba(240,192,64,0.25); background: var(--yellow-bg); }\n  .result-box.warning .rb-value { color: var(--yellow); }\n  .result-box.danger { border-color: rgba(239,91,91,0.25); background: var(--red-bg); }\n  .result-box.danger .rb-value { color: var(--red); }\n\n  .stress-header {\n    display: flex; align-items: center; gap: 10px;\n    margin-bottom: 16px;\n  }\n  .stress-header h3 { font-size: 14px; font-weight: 700; color: var(--red); }\n  .stress-header .line { flex: 1; height: 1px; background: rgba(239,91,91,0.2); }\n\n  .stress-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }\n  .stress-card {\n    background: var(--red-bg); border: 1px solid rgba(239,91,91,0.15);\n    border-radius: var(--radius); padding: 16px;\n  }\n  .stress-card .sc-label {\n    font-size: 11px; font-weight: 700; color: var(--red);\n    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;\n  }\n  .stress-card .sc-value {\n    font-family: 'Antarctican Mono', monospace;\n    font-size: 22px; font-weight: 700; color: #fff;\n  }\n  .stress-card .sc-sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; }\n\n  .verdict {\n    margin-top: 20px; padding: 16px 20px;\n    border-radius: var(--radius); text-align: center;\n    font-size: 14px; font-weight: 600;\n    transition: all 0.3s;\n  }\n  .verdict.healthy { background: var(--green-bg); border: 1px solid rgba(61,214,140,0.2); color: var(--green); }\n  .verdict.warning { background: var(--yellow-bg); border: 1px solid rgba(240,192,64,0.2); color: var(--yellow); }\n  .verdict.danger { background: var(--red-bg); border: 1px solid rgba(239,91,91,0.2); color: var(--red); }\n\n  .actions {\n    display: flex; gap: 10px; margin-top: 24px; justify-content: center;\n  }\n  .btn {\n    font-family: 'Saans', sans-serif;\n    font-size: 13px; font-weight: 600;\n    padding: 10px 20px; border-radius: 8px;\n    border: 1px solid var(--border); background: var(--surface2);\n    color: var(--text); cursor: pointer;\n    transition: all 0.2s; display: flex; align-items: center; gap: 6px;\n  }\n  .btn:hover { border-color: var(--blue); color: #fff; }\n  .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }\n  .btn.primary:hover { background: #4a7de0; }\n\n  .tip {\n    margin-top: 14px; padding: 12px 16px;\n    background: var(--blue-bg); border: 1px solid rgba(91,141,239,0.12);\n    border-radius: var(--radius); font-size: 12px; color: var(--text-dim); line-height: 1.5;\n  }\n  .tip strong { color: var(--blue); }\n\n  .scenario-slider { margin-bottom: 14px; }\n  .scenario-slider label {\n    display: flex; justify-content: space-between; align-items: center;\n    font-size: 11px; font-weight: 600; color: var(--text-dim);\n    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;\n  }\n  .scenario-slider label span {\n    font-family: 'Antarctican Mono', monospace; font-size: 13px;\n    font-weight: 700; color: var(--purple); text-transform: none; letter-spacing: 0;\n  }\n  .scenario-slider input[type=\"range\"] {\n    width: 100%; appearance: none; height: 6px; border-radius: 3px;\n    background: var(--surface2); border: 1px solid var(--border); outline: none;\n  }\n  .scenario-slider input[type=\"range\"]::-webkit-slider-thumb {\n    appearance: none; width: 18px; height: 18px; border-radius: 50%;\n    background: var(--purple); border: 2px solid #fff; cursor: pointer;\n  }\n  .scenario-canvas-wrap {\n    position: relative; width: 100%; margin-top: 8px;\n    border-radius: var(--radius); background: var(--surface2);\n    border: 1px solid var(--border); overflow: hidden;\n  }\n  .scenario-canvas-wrap canvas { display: block; width: 100%; }\n  .scenario-stats {\n    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 14px;\n  }\n  .scenario-stat {\n    text-align: center; padding: 10px; background: var(--surface2);\n    border: 1px solid var(--border); border-radius: var(--radius);\n  }\n  .scenario-stat .ss-val {\n    font-family: 'Antarctican Mono', monospace; font-size: 20px; font-weight: 700; color: #fff;\n  }\n  .scenario-stat .ss-label {\n    font-size: 10px; font-weight: 600; color: var(--text-muted);\n    text-transform: uppercase; margin-top: 3px;\n  }\n\n  .saved-toast {\n    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px);\n    background: var(--green); color: #000; font-size: 13px; font-weight: 600;\n    padding: 10px 24px; border-radius: 8px;\n    opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 100;\n  }\n  .saved-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }\n\n  .benchmark-row {\n    display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;\n  }\n  .benchmark-chip {\n    font-size: 11px; font-weight: 600; padding: 5px 12px;\n    border-radius: 6px; cursor: pointer; transition: all 0.2s;\n    border: 1px solid var(--border); background: var(--surface2); color: var(--text-dim);\n  }\n  .benchmark-chip:hover { border-color: var(--blue); color: var(--blue); }\n\n  @media (max-width: 600px) {\n    .input-grid, .input-grid.three, .results, .stress-grid { grid-template-columns: 1fr; }\n  }\n\n\u003c/style>\n\u003clink rel=\"stylesheet\" href=\"../overlay.css\">\n\u003cscript src=\"../theme-toggle.js\" defer>\u003c/script>\n\u003c/head>\n\u003cbody>\n\n\u003cdiv class=\"page\">\n  \u003cdiv class=\"header\">\n    \u003cdiv class=\"badge\">Module 3: The Margin\u003c/div>\n    \u003ch1>Margin Calculator\u003c/h1>\n    \u003cp>Know your AI unit economics before the CFO does. Input your numbers, stress-test at 3x, and export your margin model.\u003c/p>\n  \u003c/div>\n\n  \u003c!-- INPUTS -->\n  \u003cdiv class=\"card\">\n    \u003cdiv class=\"card-head\">\n      \u003cdiv class=\"card-icon\" style=\"background:var(--blue);\">1\u003c/div>\n      \u003cdiv>\u003cdiv class=\"card-title\">Your Numbers\u003c/div>\u003cdiv class=\"card-sub\">Current AI product economics\u003c/div>\u003c/div>\n    \u003c/div>\n    \u003cdiv class=\"card-body\">\n      \u003cdiv class=\"input-grid\">\n        \u003cdiv class=\"field\">\n          \u003clabel>Avg AI requests / user / month\u003c/label>\n          \u003cinput type=\"number\" id=\"requests\" placeholder=\"e.g. 500\" min=\"0\">\n        \u003c/div>\n        \u003cdiv class=\"field\">\n          \u003clabel>Blended cost per request\u003c/label>\n          \u003cinput type=\"number\" id=\"costPerReq\" placeholder=\"e.g. 0.03\" min=\"0\" step=\"0.001\">\n          \u003cdiv class=\"unit\">$, include tokens + infra overhead\u003c/div>\n        \u003c/div>\n        \u003cdiv class=\"field\">\n          \u003clabel>Revenue per user / month\u003c/label>\n          \u003cinput type=\"number\" id=\"revenue\" placeholder=\"e.g. 80\" min=\"0\" step=\"0.01\">\n          \u003cdiv class=\"unit\">$, what you charge today\u003c/div>\n        \u003c/div>\n        \u003cdiv class=\"field\">\n          \u003clabel>Non-AI COGS / user / month\u003c/label>\n          \u003cinput type=\"number\" id=\"otherCogs\" placeholder=\"e.g. 5\" min=\"0\" step=\"0.01\">\n          \u003cdiv class=\"unit\">$, hosting, support, etc.\u003c/div>\n        \u003c/div>\n      \u003c/div>\n      \u003cdiv class=\"benchmark-row\">\n        \u003cspan style=\"font-size:11px;color:var(--text-muted);line-height:28px;\">Quick fill:\u003c/span>\n        \u003cdiv class=\"benchmark-chip\" onclick=\"fillBenchmark('saas')\">Typical SaaS + AI\u003c/div>\n        \u003cdiv class=\"benchmark-chip\" onclick=\"fillBenchmark('heavy')\">Heavy AI Product\u003c/div>\n        \u003cdiv class=\"benchmark-chip\" onclick=\"fillBenchmark('copilot')\">Copilot-Style\u003c/div>\n      \u003c/div>\n    \u003c/div>\n  \u003c/div>\n\n  \u003c!-- RESULTS -->\n  \u003cdiv class=\"card\" id=\"resultsCard\" style=\"display:none;\">\n    \u003cdiv class=\"card-head\">\n      \u003cdiv class=\"card-icon\" style=\"background:var(--green);\">2\u003c/div>\n      \u003cdiv>\u003cdiv class=\"card-title\">Current Margin\u003c/div>\u003cdiv class=\"card-sub\">Based on your inputs\u003c/div>\u003c/div>\n    \u003c/div>\n    \u003cdiv class=\"card-body\">\n      \u003cdiv class=\"results\">\n        \u003cdiv class=\"result-box\" id=\"rbCogs\">\n          \u003cdiv class=\"rb-label\">AI COGS / user\u003c/div>\n          \u003cdiv class=\"rb-value\" id=\"valCogs\">\u00b7\u003c/div>\n          \u003cdiv class=\"rb-sub\">per month\u003c/div>\n        \u003c/div>\n        \u003cdiv class=\"result-box\" id=\"rbTotalCogs\">\n          \u003cdiv class=\"rb-label\">Total COGS / user\u003c/div>\n          \u003cdiv class=\"rb-value\" id=\"valTotalCogs\">\u00b7\u003c/div>\n          \u003cdiv class=\"rb-sub\">AI + other\u003c/div>\n        \u003c/div>\n        \u003cdiv class=\"result-box\" id=\"rbMargin\">\n          \u003cdiv class=\"rb-label\">Gross Margin\u003c/div>\n          \u003cdiv class=\"rb-value\" id=\"valMargin\">\u00b7\u003c/div>\n          \u003cdiv class=\"rb-sub\" id=\"valMarginAbs\">\u003c/div>\n        \u003c/div>\n      \u003c/div>\n      \u003cdiv class=\"verdict\" id=\"verdict\">\u003c/div>\n    \u003c/div>\n  \u003c/div>\n\n  \u003c!-- STRESS TEST -->\n  \u003cdiv class=\"card\" id=\"stressCard\" style=\"display:none;\">\n    \u003cdiv class=\"card-head\">\n      \u003cdiv class=\"card-icon\" style=\"background:var(--red);\">3\u003c/div>\n      \u003cdiv>\u003cdiv class=\"card-title\">Stress Test\u003c/div>\u003cdiv class=\"card-sub\">What if costs spike or power users surge?\u003c/div>\u003c/div>\n    \u003c/div>\n    \u003cdiv class=\"card-body\">\n      \u003cdiv class=\"stress-grid\">\n        \u003cdiv>\n          \u003cdiv class=\"stress-header\">\u003ch3>3x Cost Shock\u003c/h3>\u003cdiv class=\"line\">\u003c/div>\u003c/div>\n          \u003cdiv class=\"stress-card\">\n            \u003cdiv class=\"sc-label\">AI COGS / user\u003c/div>\n            \u003cdiv class=\"sc-value\" id=\"stress3xCogs\">\u00b7\u003c/div>\n          \u003c/div>\n          \u003cdiv class=\"stress-card\" style=\"margin-top:10px;\">\n            \u003cdiv class=\"sc-label\">Gross Margin\u003c/div>\n            \u003cdiv class=\"sc-value\" id=\"stress3xMargin\">\u00b7\u003c/div>\n            \u003cdiv class=\"sc-sub\" id=\"stress3xAbs\">\u003c/div>\n          \u003c/div>\n        \u003c/div>\n        \u003cdiv>\n          \u003cdiv class=\"stress-header\">\u003ch3>2x Heavy Users\u003c/h3>\u003cdiv class=\"line\">\u003c/div>\u003c/div>\n          \u003cdiv class=\"stress-card\">\n            \u003cdiv class=\"sc-label\">AI COGS / user\u003c/div>\n            \u003cdiv class=\"sc-value\" id=\"stress2xCogs\">\u00b7\u003c/div>\n          \u003c/div>\n          \u003cdiv class=\"stress-card\" style=\"margin-top:10px;\">\n            \u003cdiv class=\"sc-label\">Gross Margin\u003c/div>\n            \u003cdiv class=\"sc-value\" id=\"stress2xMargin\">\u00b7\u003c/div>\n            \u003cdiv class=\"sc-sub\" id=\"stress2xAbs\">\u003c/div>\n          \u003c/div>\n        \u003c/div>\n      \u003c/div>\n      \u003cdiv class=\"verdict\" id=\"stressVerdict\" style=\"margin-top:16px;\">\u003c/div>\n      \u003cdiv class=\"tip\">\n        \u003cstrong>Why stress-test?\u003c/strong> OpenAI has cut prices repeatedly, but providers can also raise them. Your model must survive both directions. If 3x breaks you, that's a finding, not a failure.\n      \u003c/div>\n    \u003c/div>\n  \u003c/div>\n\n  \u003c!-- SCENARIO LAB -->\n  \u003cdiv class=\"card\" id=\"scenarioCard\" style=\"display:none;\">\n    \u003cdiv class=\"card-head\">\n      \u003cdiv class=\"card-icon\" style=\"background:var(--purple);\">4\u003c/div>\n      \u003cdiv>\u003cdiv class=\"card-title\">Scenario Lab\u003c/div>\u003cdiv class=\"card-sub\">Drag the sliders to explore how your margin behaves under different conditions\u003c/div>\u003c/div>\n    \u003c/div>\n    \u003cdiv class=\"card-body\">\n      \u003cdiv class=\"scenario-slider\">\n        \u003clabel>Inference cost multiplier \u003cspan id=\"scenCostVal\">1.0x\u003c/span>\u003c/label>\n        \u003cinput type=\"range\" id=\"scenCost\" min=\"25\" max=\"500\" value=\"100\" step=\"5\">\n      \u003c/div>\n      \u003cdiv class=\"scenario-slider\">\n        \u003clabel>Usage volume multiplier \u003cspan id=\"scenVolVal\">1.0x\u003c/span>\u003c/label>\n        \u003cinput type=\"range\" id=\"scenVol\" min=\"50\" max=\"1000\" value=\"100\" step=\"25\">\n      \u003c/div>\n      \u003cdiv class=\"scenario-slider\">\n        \u003clabel>Cascading ratio (% routed to cheap model) \u003cspan id=\"scenCascVal\">0%\u003c/span>\u003c/label>\n        \u003cinput type=\"range\" id=\"scenCasc\" min=\"0\" max=\"95\" value=\"0\" step=\"5\">\n      \u003c/div>\n      \u003cdiv class=\"scenario-stats\">\n        \u003cdiv class=\"scenario-stat\">\u003cdiv class=\"ss-val\" id=\"scenMargin\">\u00b7\u003c/div>\u003cdiv class=\"ss-label\">Margin\u003c/div>\u003c/div>\n        \u003cdiv class=\"scenario-stat\">\u003cdiv class=\"ss-val\" id=\"scenCogs\">\u00b7\u003c/div>\u003cdiv class=\"ss-label\">AI COGS\u003c/div>\u003c/div>\n        \u003cdiv class=\"scenario-stat\">\u003cdiv class=\"ss-val\" id=\"scenProfit\">\u00b7\u003c/div>\u003cdiv class=\"ss-label\">Gross Profit\u003c/div>\u003c/div>\n      \u003c/div>\n      \u003cdiv class=\"scenario-canvas-wrap\">\n        \u003ccanvas id=\"scenarioCanvas\" width=\"672\" height=\"220\">\u003c/canvas>\n      \u003c/div>\n      \u003cdiv class=\"tip\" style=\"margin-top:14px\">\n        \u003cstrong>How to read this:\u003c/strong> The chart shows your margin % across a range of cost multipliers at your current volume and cascading settings. The dot marks your selected scenario. Drag sliders to see how cascading offsets cost spikes, this is the economic argument for model routing.\n      \u003c/div>\n    \u003c/div>\n  \u003c/div>\n\n  \u003c!-- ACTIONS -->\n  \u003cdiv class=\"actions\">\n    \u003cbutton class=\"btn\" onclick=\"resetAll()\">Reset\u003c/button>\n    \u003cbutton class=\"btn primary\" onclick=\"copyToClipboard()\">Copy as Text\u003c/button>\n  \u003c/div>\n\u003c/div>\n\n\u003cdiv class=\"saved-toast\" id=\"toast\">Saved\u003c/div>\n\n\u003cscript>\nconst KEY = 'aps-m3-margin';\nconst $ = id => document.getElementById(id);\nconst inputs = ['requests','costPerReq','revenue','otherCogs'];\n\nfunction getVals() {\n  return {\n    requests: parseFloat($('requests').value) || 0,\n    costPerReq: parseFloat($('costPerReq').value) || 0,\n    revenue: parseFloat($('revenue').value) || 0,\n    otherCogs: parseFloat($('otherCogs').value) || 0\n  };\n}\n\nfunction calc() {\n  const v = getVals();\n  const hasInput = v.requests > 0 && v.costPerReq > 0 && v.revenue > 0;\n  $('resultsCard').style.display = hasInput ? '' : 'none';\n  $('stressCard').style.display = hasInput ? '' : 'none';\n  $('scenarioCard').style.display = hasInput ? '' : 'none';\n  if (!hasInput) { return; }\n\n  const aiCogs = v.requests * v.costPerReq;\n  const totalCogs = aiCogs + v.otherCogs;\n  const grossProfit = v.revenue - totalCogs;\n  const margin = (grossProfit / v.revenue) * 100;\n\n  $('valCogs').textContent = '$' + aiCogs.toFixed(2);\n  $('valTotalCogs').textContent = '$' + totalCogs.toFixed(2);\n  $('valMargin').textContent = margin.toFixed(1) + '%';\n  $('valMarginAbs').textContent = '$' + grossProfit.toFixed(2) + '/user';\n\n  const cls = margin >= 60 ? 'healthy' : margin >= 40 ? 'warning' : 'danger';\n  ['rbCogs','rbTotalCogs','rbMargin'].forEach(id => {\n    $(id).className = 'result-box ' + (id === 'rbMargin' ? cls : '');\n  });\n\n  const msgs = {\n    healthy: 'Healthy margins. You have room to invest in model quality and still stay profitable.',\n    warning: 'Caution zone. Workable, but one cost spike and you are underwater. Build routing + cascading.',\n    danger: 'Danger. You are burning cash on every user. Fix architecture or pricing before you scale.'\n  };\n  $('verdict').className = 'verdict ' + cls;\n  $('verdict').textContent = msgs[cls];\n\n  // Stress: 3x cost\n  const ai3x = aiCogs * 3;\n  const total3x = ai3x + v.otherCogs;\n  const gp3x = v.revenue - total3x;\n  const m3x = (gp3x / v.revenue) * 100;\n  $('stress3xCogs').textContent = '$' + ai3x.toFixed(2);\n  $('stress3xMargin').textContent = m3x.toFixed(1) + '%';\n  $('stress3xAbs').textContent = '$' + gp3x.toFixed(2) + '/user';\n\n  // Stress: 2x usage\n  const ai2x = aiCogs * 2;\n  const total2x = ai2x + v.otherCogs;\n  const gp2x = v.revenue - total2x;\n  const m2x = (gp2x / v.revenue) * 100;\n  $('stress2xCogs').textContent = '$' + ai2x.toFixed(2);\n  $('stress2xMargin').textContent = m2x.toFixed(1) + '%';\n  $('stress2xAbs').textContent = '$' + gp2x.toFixed(2) + '/user';\n\n  const worst = Math.min(m3x, m2x);\n  const scls = worst >= 40 ? 'warning' : 'danger';\n  const smsgs = {\n    warning: 'You survive the stress test, but margins are thin. Prioritize model cascading.',\n    danger: 'You go negative under stress. This is a board-level risk. Act this quarter.'\n  };\n  if (worst >= 60) {\n    $('stressVerdict').className = 'verdict healthy';\n    $('stressVerdict').textContent = 'You survive both stress scenarios with healthy margins.';\n  } else {\n    $('stressVerdict').className = 'verdict ' + scls;\n    $('stressVerdict').textContent = smsgs[scls];\n  }\n\n  drawScenario();\n  save();\n}\n\nfunction drawScenario() {\n  const v = getVals();\n  if (v.requests \u003c= 0 || v.costPerReq \u003c= 0 || v.revenue \u003c= 0) return;\n\n  const costMul = parseInt($('scenCost').value) / 100;\n  const volMul = parseInt($('scenVol').value) / 100;\n  const cascPct = parseInt($('scenCasc').value) / 100;\n  $('scenCostVal').textContent = costMul.toFixed(1) + 'x';\n  $('scenVolVal').textContent = volMul.toFixed(1) + 'x';\n  $('scenCascVal').textContent = Math.round(cascPct * 100) + '%';\n\n  const cheapFactor = 0.1;\n  const effectiveCostPerReq = v.costPerReq * (cascPct * cheapFactor + (1 - cascPct));\n  const aiCogs = v.requests * volMul * effectiveCostPerReq * costMul;\n  const totalCogs = aiCogs + v.otherCogs;\n  const gp = v.revenue - totalCogs;\n  const margin = (gp / v.revenue) * 100;\n\n  const mColor = margin >= 40 ? 'var(--green)' : margin >= 0 ? 'var(--yellow)' : 'var(--red)';\n  $('scenMargin').textContent = margin.toFixed(1) + '%';\n  $('scenMargin').style.color = mColor;\n  $('scenCogs').textContent = '$' + aiCogs.toFixed(2);\n  $('scenProfit').textContent = '$' + gp.toFixed(2);\n  $('scenProfit').style.color = gp >= 0 ? 'var(--green)' : 'var(--red)';\n\n  const cv = $('scenarioCanvas');\n  const ctx = cv.getContext('2d');\n  const W = cv.width, H = cv.height;\n  ctx.clearRect(0, 0, W, H);\n\n  const pad = { t: 20, r: 20, b: 28, l: 50 };\n  const cw = W - pad.l - pad.r;\n  const ch = H - pad.t - pad.b;\n\n  const steps = 20;\n  const points = [];\n  for (let i = 0; i \u003c= steps; i++) {\n    const xMul = 0.25 + (i / steps) * 4.75;\n    const ec = v.costPerReq * (cascPct * cheapFactor + (1 - cascPct));\n    const ac = v.requests * volMul * ec * xMul;\n    const m = ((v.revenue - ac - v.otherCogs) / v.revenue) * 100;\n    points.push({ x: xMul, margin: Math.max(-120, Math.min(100, m)) });\n  }\n\n  ctx.strokeStyle = 'rgba(255,255,255,0.06)';\n  ctx.lineWidth = 1;\n  for (let v2 = -100; v2 \u003c= 100; v2 += 50) {\n    const y = pad.t + ch - ((v2 + 120) / 220) * ch;\n    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();\n    ctx.font = '500 9px Antarctican Mono';\n    ctx.fillStyle = '#55556a';\n    ctx.textAlign = 'right';\n    ctx.fillText(v2 + '%', pad.l - 6, y + 3);\n  }\n\n  const zeroY = pad.t + ch - ((0 + 120) / 220) * ch;\n  ctx.strokeStyle = 'rgba(239,91,91,0.25)';\n  ctx.setLineDash([4, 4]);\n  ctx.beginPath(); ctx.moveTo(pad.l, zeroY); ctx.lineTo(W - pad.r, zeroY); ctx.stroke();\n  ctx.setLineDash([]);\n\n  ctx.font = '500 8px Saans';\n  ctx.fillStyle = 'rgba(239,91,91,0.4)';\n  ctx.textAlign = 'left';\n  ctx.fillText('Break-even', pad.l + 4, zeroY - 4);\n\n  ctx.strokeStyle = 'rgba(160,123,232,0.8)';\n  ctx.lineWidth = 2.5;\n  ctx.beginPath();\n  points.forEach((p, i) => {\n    const px = pad.l + ((p.x - 0.25) / 4.75) * cw;\n    const py = pad.t + ch - ((p.margin + 120) / 220) * ch;\n    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);\n  });\n  ctx.stroke();\n\n  const curPx = pad.l + ((costMul - 0.25) / 4.75) * cw;\n  const curPy = pad.t + ch - ((Math.max(-120, Math.min(100, margin)) + 120) / 220) * ch;\n  ctx.beginPath();\n  ctx.arc(curPx, curPy, 6, 0, Math.PI * 2);\n  ctx.fillStyle = margin >= 40 ? '#3dd68c' : margin >= 0 ? '#f0c040' : '#ef5b5b';\n  ctx.fill();\n  ctx.strokeStyle = '#fff';\n  ctx.lineWidth = 2;\n  ctx.stroke();\n\n  ctx.font = '700 10px Antarctican Mono';\n  ctx.fillStyle = '#fff';\n  ctx.textAlign = 'left';\n  ctx.fillText(margin.toFixed(1) + '%', curPx + 10, curPy + 4);\n\n  ctx.font = '500 9px Saans';\n  ctx.fillStyle = '#55556a';\n  ctx.textAlign = 'center';\n  ctx.fillText('Cost multiplier', W / 2, H - 4);\n}\n\nfunction save() {\n  const v = getVals();\n  localStorage.setItem(KEY, JSON.stringify(v));\n  showToast('Auto-saved');\n}\n\nfunction load() {\n  try {\n    const d = JSON.parse(localStorage.getItem(KEY));\n    if (d) {\n      inputs.forEach(k => { if (d[k] !== undefined) $(k).value = d[k] || ''; });\n      calc();\n    }\n  } catch(e) {}\n}\n\nfunction fillBenchmark(type) {\n  const benchmarks = {\n    saas:   { requests: 500,  costPerReq: 0.02,  revenue: 80,  otherCogs: 5 },\n    heavy:  { requests: 2000, costPerReq: 0.04,  revenue: 120, otherCogs: 8 },\n    copilot:{ requests: 3000, costPerReq: 0.015, revenue: 19,  otherCogs: 2 }\n  };\n  const b = benchmarks[type];\n  inputs.forEach(k => $(k).value = b[k]);\n  calc();\n}\n\nfunction resetAll() {\n  inputs.forEach(k => $(k).value = '');\n  $('resultsCard').style.display = 'none';\n  $('stressCard').style.display = 'none';\n  $('scenarioCard').style.display = 'none';\n  $('scenCost').value = 100; $('scenVol').value = 100; $('scenCasc').value = 0;\n  localStorage.removeItem(KEY);\n  showToast('Reset');\n}\n\nfunction getExportText() {\n  const v = getVals();\n  const aiCogs = v.requests * v.costPerReq;\n  const totalCogs = aiCogs + v.otherCogs;\n  const gp = v.revenue - totalCogs;\n  const margin = v.revenue > 0 ? ((gp / v.revenue) * 100).toFixed(1) : '0';\n  const ai3x = aiCogs * 3; const t3x = ai3x + v.otherCogs; const gp3x = v.revenue - t3x;\n  const m3x = v.revenue > 0 ? ((gp3x / v.revenue) * 100).toFixed(1) : '0';\n  const ai2x = aiCogs * 2; const t2x = ai2x + v.otherCogs; const gp2x = v.revenue - t2x;\n  const m2x = v.revenue > 0 ? ((gp2x / v.revenue) * 100).toFixed(1) : '0';\n\n  return `# Margin Calculator, Module 3\n\n## Inputs\n- Avg requests/user/month: ${v.requests}\n- Blended cost/request: $${v.costPerReq}\n- Revenue/user/month: $${v.revenue}\n- Non-AI COGS/user/month: $${v.otherCogs}\n\n## Current Margin\n- AI COGS/user: $${aiCogs.toFixed(2)}\n- Total COGS/user: $${totalCogs.toFixed(2)}\n- Gross margin: ${margin}% ($${gp.toFixed(2)}/user)\n\n## Stress Test\n| Scenario | AI COGS | Margin |\n|----------|---------|--------|\n| 3x Cost  | $${ai3x.toFixed(2)} | ${m3x}% ($${gp3x.toFixed(2)}) |\n| 2x Usage | $${ai2x.toFixed(2)} | ${m2x}% ($${gp2x.toFixed(2)}) |\n`;\n}\n\nfunction copyToClipboard() {\n  navigator.clipboard.writeText(getExportText()).then(() => showToast('Copied to clipboard'));\n}\n\nfunction showToast(msg) {\n  const t = $('toast');\n  t.textContent = msg;\n  t.classList.add('show');\n  setTimeout(() => t.classList.remove('show'), 1800);\n}\n\ninputs.forEach(k => $(k).addEventListener('input', calc));\n['scenCost','scenVol','scenCasc'].forEach(id => $(id).addEventListener('input', drawScenario));\nload();\n\u003c/script>\n\u003c/body>\n\u003c/html>\n", "\u003c!DOCTYPE html>\n\u003chtml lang=\"en\" class=\"aipsc-proto support-proto\">\n\u003chead>\n\u003cmeta charset=\"UTF-8\">\n\u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\u003ctitle>M3, Pricing Strategy Designer\u003c/title>\n\u003clink rel=\"stylesheet\" href=\"../../../../assets/fonts/ps-fonts.css\">\n\u003clink rel=\"stylesheet\" href=\"https://product-school-platform.github.io/ps-content-library/assets/fonts/ps-fonts.css\">\n\u003cstyle>\n  @import url('https://product-school-platform.github.io/ps-content-library/assets/fonts/ps-fonts.css');\n:root {\n    --bg: #0b0b10; --surface: #13131a; --surface2: #1a1a24;\n    --border: #252535; --border-hi: #35354a;\n    --text: #ffffff; --text-dim: #7a7a9a; --text-muted: #55556a;\n    --blue: #5b8def; --green: #3dd68c; --yellow: #f0c040; --red: #ef5b5b; --purple: #a07be8;\n    --blue-bg: rgba(91,141,239,0.08); --green-bg: rgba(61,214,140,0.08);\n    --yellow-bg: rgba(240,192,64,0.08); --red-bg: rgba(239,91,91,0.08);\n    --radius: 10px; --radius-lg: 14px;\n  }\n\n  * { margin:0; padding:0; box-sizing:border-box; }\n  html { scroll-behavior: smooth; }\n  body {\n    font-family: 'Saans', -apple-system, sans-serif;\n    background: var(--bg); color: var(--text);\n    min-height: 100vh; padding: 40px 20px 80px;\n    -webkit-font-smoothing: antialiased;\n  }\n\n  .page { max-width: 720px; margin: 0 auto; }\n\n  .header { text-align: center; margin-bottom: 36px; }\n  .badge {\n    display: inline-block; font-size: 10px; font-weight: 700;\n    text-transform: uppercase; letter-spacing: 0.12em;\n    color: var(--green); background: var(--green-bg);\n    border: 1px solid rgba(61,214,140,0.15);\n    padding: 5px 14px; border-radius: 20px; margin-bottom: 14px;\n  }\n  .header h1 {\n    font-size: 30px; font-weight: 800; color: #fff;\n    margin-bottom: 8px; letter-spacing: -0.02em;\n  }\n  .header p { font-size: 14px; color: var(--text-dim); line-height: 1.6; max-width: 540px; margin: 0 auto; }\n\n  .card {\n    background: var(--surface); border: 1px solid var(--border);\n    border-radius: var(--radius-lg); margin-bottom: 20px;\n    overflow: hidden; transition: border-color 0.2s;\n  }\n  .card:hover { border-color: var(--border-hi); }\n\n  .card-head {\n    padding: 18px 24px; display: flex; align-items: center; gap: 14px;\n    border-bottom: 1px solid var(--border);\n  }\n  .card-icon {\n    width: 32px; height: 32px; border-radius: 8px;\n    display: flex; align-items: center; justify-content: center;\n    font-size: 14px; font-weight: 800; color: #fff; flex-shrink: 0;\n  }\n  .card-title { font-size: 16px; font-weight: 700; color: #fff; }\n  .card-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }\n  .card-body { padding: 20px 24px 24px; }\n\n  .pick-grid {\n    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;\n  }\n  .pick-card {\n    background: var(--surface2); border: 2px solid var(--border);\n    border-radius: var(--radius); padding: 14px 12px;\n    cursor: pointer; text-align: left;\n    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;\n  }\n  .pick-card:hover { border-color: var(--border-hi); }\n  .pick-card.selected {\n    border-color: var(--blue);\n    background: var(--blue-bg);\n    box-shadow: 0 0 0 1px rgba(91,141,239,0.15);\n  }\n  .pick-card .emoji { font-size: 22px; line-height: 1; margin-bottom: 8px; }\n  .pick-card .name { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 6px; }\n  .pick-card .desc { font-size: 11px; color: var(--text-dim); line-height: 1.45; margin-bottom: 8px; }\n  .pick-card .ex { font-size: 10px; color: var(--text-muted); font-style: italic; line-height: 1.4; }\n\n  .callout {\n    margin-top: 16px; padding: 12px 16px;\n    background: linear-gradient(135deg, rgba(160,123,232,0.12), rgba(91,141,239,0.08));\n    border: 1px solid rgba(160,123,232,0.2);\n    border-radius: var(--radius); font-size: 12px; color: var(--text-dim); line-height: 1.55;\n  }\n  .callout strong { color: var(--purple); }\n\n  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }\n  .input-grid.single { grid-template-columns: 1fr; }\n\n  .field label {\n    display: block; font-size: 11px; font-weight: 600;\n    color: var(--text-dim); text-transform: uppercase;\n    letter-spacing: 0.06em; margin-bottom: 6px;\n  }\n  .field input {\n    width: 100%; font-family: 'Antarctican Mono', monospace;\n    font-size: 14px; font-weight: 500; color: #fff;\n    background: var(--surface2); border: 1px solid var(--border);\n    border-radius: 8px; padding: 10px 14px;\n    transition: border-color 0.2s, box-shadow 0.2s;\n    outline: none;\n  }\n  .field input:focus {\n    border-color: var(--blue); box-shadow: 0 0 0 3px rgba(91,141,239,0.12);\n  }\n  .field input::placeholder { color: var(--text-muted); }\n  .field .hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }\n\n  .calc-row {\n    margin-top: 18px; padding: 16px 18px;\n    background: var(--surface2); border: 1px solid var(--border);\n    border-radius: var(--radius);\n  }\n  .calc-row .label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 6px; }\n  .calc-row .value {\n    font-family: 'Antarctican Mono', monospace;\n    font-size: 24px; font-weight: 700; color: var(--green);\n  }\n  .tip {\n    margin-top: 14px; padding: 12px 16px;\n    background: var(--blue-bg); border: 1px solid rgba(91,141,239,0.12);\n    border-radius: var(--radius); font-size: 12px; color: var(--text-dim); line-height: 1.5;\n  }\n  .tip strong { color: var(--blue); }\n\n  .footer-note {\n    text-align: center; font-size: 12px; color: var(--text-muted);\n    line-height: 1.6; max-width: 560px; margin: 28px auto 0;\n    padding: 0 8px;\n  }\n\n  .actions {\n    display: flex; gap: 10px; margin-top: 24px; justify-content: center; flex-wrap: wrap;\n  }\n  .btn {\n    font-family: 'Saans', sans-serif;\n    font-size: 13px; font-weight: 600;\n    padding: 10px 20px; border-radius: 8px;\n    border: 1px solid var(--border); background: var(--surface2);\n    color: var(--text); cursor: pointer;\n    transition: all 0.2s; display: flex; align-items: center; gap: 6px;\n  }\n  .btn:hover { border-color: var(--blue); color: #fff; }\n  .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }\n  .btn.primary:hover { background: #4a7de0; }\n\n  .saved-toast {\n    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px);\n    background: var(--green); color: #000; font-size: 13px; font-weight: 600;\n    padding: 10px 24px; border-radius: 8px;\n    opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 100;\n  }\n  .saved-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }\n\n  @media (max-width: 640px) {\n    .pick-grid { grid-template-columns: 1fr; }\n    .input-grid { grid-template-columns: 1fr; }\n  }\n\u003c/style>\n\u003clink rel=\"stylesheet\" href=\"../overlay.css\">\n\u003cscript src=\"../theme-toggle.js\" defer>\u003c/script>\n\u003c/head>\n\u003cbody>\n\n\u003cdiv class=\"page\">\n  \u003cdiv class=\"header\">\n    \u003cdiv class=\"badge\">Module 3: The Margin\u003c/div>\n    \u003ch1>Pricing Strategy Designer\u003c/h1>\n    \u003cp>A tiny walkthrough for the pricing block in \u003ccode>03-the-margin/cost-curve.md\u003c/code>: pick a posture, choose how to charge, then set base + metered pricing.\u003c/p>\n  \u003c/div>\n\n  \u003c!-- Card 1 -->\n  \u003cdiv class=\"card\">\n    \u003cdiv class=\"card-head\">\n      \u003cdiv class=\"card-icon\" style=\"background:var(--blue);\">1\u003c/div>\n      \u003cdiv>\u003cdiv class=\"card-title\">Pick Your Strategy\u003c/div>\u003cdiv class=\"card-sub\">One primary posture\u003c/div>\u003c/div>\n    \u003c/div>\n    \u003cdiv class=\"card-body\">\n      \u003cdiv class=\"pick-grid\" id=\"strategyGrid\">\n        \u003cdiv class=\"pick-card\" data-strategy=\"skim\" role=\"button\" tabindex=\"0\">\n          \u003cdiv class=\"emoji\" aria-hidden=\"true\">\u003c/div>\n          \u003cdiv class=\"name\">Skim\u003c/div>\n          \u003cdiv class=\"desc\">Launch premium, lower over time. Signal quality.\u003c/div>\n          \u003cdiv class=\"ex\">e.g. Apple iPhone, Porsche Cayenne\u003c/div>\n        \u003c/div>\n        \u003cdiv class=\"pick-card\" data-strategy=\"penetrate\" role=\"button\" tabindex=\"0\">\n          \u003cdiv class=\"emoji\" aria-hidden=\"true\">\u003c/div>\n          \u003cdiv class=\"name\">Penetrate\u003c/div>\n          \u003cdiv class=\"desc\">Price low, win volume, optimize costs relentlessly.\u003c/div>\n          \u003cdiv class=\"ex\">e.g. Amazon, AWS\u003c/div>\n        \u003c/div>\n        \u003cdiv class=\"pick-card\" data-strategy=\"maximize\" role=\"button\" tabindex=\"0\">\n          \u003cdiv class=\"emoji\" aria-hidden=\"true\">\u003c/div>\n          \u003cdiv class=\"name\">Maximize\u003c/div>\n          \u003cdiv class=\"desc\">Neither extreme. Optimize revenue in your current position.\u003c/div>\n          \u003cdiv class=\"ex\">e.g. Microsoft, HubSpot\u003c/div>\n        \u003c/div>\n      \u003c/div>\n    \u003c/div>\n  \u003c/div>\n\n  \u003c!-- Card 2 -->\n  \u003cdiv class=\"card\">\n    \u003cdiv class=\"card-head\">\n      \u003cdiv class=\"card-icon\" style=\"background:var(--purple);\">2\u003c/div>\n      \u003cdiv>\u003cdiv class=\"card-title\">How You Charge\u003c/div>\u003cdiv class=\"card-sub\">Madhavan Ramanujam \u00b7 Lenny's Podcast\u003c/div>\u003c/div>\n    \u003c/div>\n    \u003cdiv class=\"card-body\">\n      \u003cdiv class=\"pick-grid\" id=\"modelGrid\">\n        \u003cdiv class=\"pick-card\" data-model=\"seat\" role=\"button\" tabindex=\"0\">\n          \u003cdiv class=\"emoji\" aria-hidden=\"true\">\u003c/div>\n          \u003cdiv class=\"name\">Seat / Access\u003c/div>\n          \u003cdiv class=\"desc\">Per user, flat monthly. Human drives the tool.\u003c/div>\n          \u003cdiv class=\"ex\">e.g. Figma, Slack, Notion\u003c/div>\n        \u003c/div>\n        \u003cdiv class=\"pick-card\" data-model=\"hybrid\" role=\"button\" tabindex=\"0\">\n          \u003cdiv class=\"emoji\" aria-hidden=\"true\">\u003c/div>\n          \u003cdiv class=\"name\">Hybrid (base + usage)\u003c/div>\n          \u003cdiv class=\"desc\">Platform fee + metered AI work.\u003c/div>\n          \u003cdiv class=\"ex\">e.g. HubSpot, Canva AI, Grammarly\u003c/div>\n        \u003c/div>\n        \u003cdiv class=\"pick-card\" data-model=\"outcome\" role=\"button\" tabindex=\"0\">\n          \u003cdiv class=\"emoji\" aria-hidden=\"true\">\u003c/div>\n          \u003cdiv class=\"name\">Outcome / Resolution\u003c/div>\n          \u003cdiv class=\"desc\">Pay only when AI delivers the result.\u003c/div>\n          \u003cdiv class=\"ex\">e.g. Intercom Fin, Harvey\u003c/div>\n        \u003c/div>\n      \u003c/div>\n    \u003c/div>\n  \u003c/div>\n\n  \u003c!-- Card 3 -->\n  \u003cdiv class=\"card\">\n    \u003cdiv class=\"card-head\">\n      \u003cdiv class=\"card-icon\" style=\"background:var(--green);\">3\u003c/div>\n      \u003cdiv>\u003cdiv class=\"card-title\">Set the Pricing Structure\u003c/div>\u003cdiv class=\"card-sub\">Base fee + metered unit\u003c/div>\u003c/div>\n    \u003c/div>\n    \u003cdiv class=\"card-body\">\n      \u003cdiv class=\"input-grid\">\n        \u003cdiv class=\"field\" style=\"grid-column:1/-1;\">\n          \u003clabel>Unit of work you're metering\u003c/label>\n          \u003cinput type=\"text\" id=\"unitLabel\" placeholder=\"e.g. resolved conversations, reports generated, workflows completed\">\n          \u003cdiv class=\"hint\">Name the customer outcome, not the internal model action.\u003c/div>\n        \u003c/div>\n        \u003cdiv class=\"field\">\n          \u003clabel>Base fee ($/month)\u003c/label>\n          \u003cinput type=\"number\" id=\"baseFee\" placeholder=\"e.g. 29\" min=\"0\" step=\"0.01\">\n        \u003c/div>\n        \u003cdiv class=\"field\">\n          \u003clabel>Price per unit ($)\u003c/label>\n          \u003cinput type=\"number\" id=\"pricePerUnit\" placeholder=\"e.g. 0.50\" min=\"0\" step=\"0.001\">\n        \u003c/div>\n        \u003cdiv class=\"field\">\n          \u003clabel>Optional: estimated units per user / month\u003c/label>\n          \u003cinput type=\"number\" id=\"unitsPerUser\" placeholder=\"e.g. 120\" min=\"0\" step=\"1\">\n        \u003c/div>\n      \u003c/div>\n      \u003cdiv class=\"calc-row\">\n        \u003cdiv class=\"label\">Implied revenue per user / month\u003c/div>\n        \u003cdiv class=\"value\" id=\"revPerUser\">$0.00\u003c/div>\n        \u003cdiv class=\"hint\" style=\"margin-top:6px;\">Copy the exported block into your repo and refine the assumptions as your cost model gets sharper.\u003c/div>\n      \u003c/div>\n    \u003c/div>\n  \u003c/div>\n\n  \u003cp class=\"footer-note\">Copy this into \u003cstrong style=\"color:var(--text-dim);\">03-the-margin/cost-curve.md\u003c/strong> under the Pricing Model section.\u003c/p>\n  \u003cdiv class=\"actions\">\n    \u003cbutton type=\"button\" class=\"btn\" onclick=\"resetAll()\">Reset\u003c/button>\n    \u003cbutton type=\"button\" class=\"btn\" onclick=\"copyToClipboard()\">Copy as Text\u003c/button>\n  \u003c/div>\n\u003c/div>\n\n\u003cdiv class=\"saved-toast\" id=\"toast\">Saved\u003c/div>\n\n\u003cscript>\nconst KEY = 'aps-m3-pricing';\nconst $ = id => document.getElementById(id);\n\nlet strategy = null;\nlet model = null;\n\nfunction getState() {\n  return {\n    strategy,\n    model,\n    baseFee: $('baseFee').value,\n    unitLabel: $('unitLabel').value,\n    pricePerUnit: $('pricePerUnit').value,\n    unitsPerUser: $('unitsPerUser').value\n  };\n}\n\nfunction applySelections() {\n  document.querySelectorAll('#strategyGrid .pick-card').forEach(el => {\n    el.classList.toggle('selected', el.dataset.strategy === strategy);\n  });\n  document.querySelectorAll('#modelGrid .pick-card').forEach(el => {\n    el.classList.toggle('selected', el.dataset.model === model);\n  });\n}\n\nfunction selectStrategy(key) {\n  strategy = key;\n  applySelections();\n  save();\n}\n\nfunction selectModel(key) {\n  model = key;\n  applySelections();\n  save();\n}\n\nfunction wirePickCards() {\n  document.querySelectorAll('#strategyGrid .pick-card').forEach(el => {\n    const go = () => selectStrategy(el.dataset.strategy);\n    el.addEventListener('click', go);\n    el.addEventListener('keydown', e => {\n      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }\n    });\n  });\n  document.querySelectorAll('#modelGrid .pick-card').forEach(el => {\n    const go = () => selectModel(el.dataset.model);\n    el.addEventListener('click', go);\n    el.addEventListener('keydown', e => {\n      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }\n    });\n  });\n}\n\nfunction revenuePerUser() {\n  const base = parseFloat($('baseFee').value) || 0;\n  const ppu = parseFloat($('pricePerUnit').value) || 0;\n  const u = parseFloat($('unitsPerUser').value) || 0;\n  return base + ppu * u;\n}\n\nfunction updatePricingOutputs() {\n  $('revPerUser').textContent = '$' + revenuePerUser().toFixed(2);\n}\n\nfunction save() {\n  localStorage.setItem(KEY, JSON.stringify(getState()));\n  showToast('Auto-saved');\n}\n\nfunction load() {\n  try {\n    const d = JSON.parse(localStorage.getItem(KEY));\n    if (!d) return;\n    strategy = d.strategy || null;\n    model = d.model || null;\n    ['baseFee','unitLabel','pricePerUnit','unitsPerUser'].forEach(k => {\n      if (d[k] !== undefined && $(k)) $(k).value = d[k] || '';\n    });\n    applySelections();\n    updatePricingOutputs();\n  } catch (e) {}\n}\n\nfunction resetAll() {\n  strategy = null;\n  model = null;\n  ['baseFee','unitLabel','pricePerUnit','unitsPerUser'].forEach(k => { $(k).value = ''; });\n  applySelections();\n  localStorage.removeItem(KEY);\n  updatePricingOutputs();\n  showToast('Reset');\n}\n\nfunction strategyLabel(k) {\n  return { skim: 'Skim', penetrate: 'Penetrate', maximize: 'Maximize' }[k] || '\u00b7';\n}\n\nfunction modelLabel(k) {\n  return { seat: 'Seat / Access', hybrid: 'Hybrid (base + usage)', outcome: 'Outcome / Resolution' }[k] || '\u00b7';\n}\n\nfunction getExportText(md) {\n  const s = getState();\n  const rev = revenuePerUser();\n  const head = md ? '# ' : '';\n  const h2 = md ? '## ' : '';\n  const b = md ? '**' : '';\n\n  let out = head + 'Pricing Strategy Block, Module 3\\n\\n';\n  out += h2 + 'Pricing Strategy\\n';\n  out += '- Strategy posture: ' + b + strategyLabel(s.strategy) + (md ? '**' : '') + '\\n';\n  out += '- Pricing model: ' + b + modelLabel(s.model) + (md ? '**' : '') + '\\n';\n  out += '- Unit of work metered: ' + (s.unitLabel || '\u00b7') + '\\n';\n  out += '- Base fee ($/month): ' + (s.baseFee || '0') + '\\n';\n  out += '- Price per unit: $' + (s.pricePerUnit || '0') + '\\n';\n  out += '- Estimated units/user/month: ' + (s.unitsPerUser || '0') + '\\n';\n  out += '- ' + b + 'Implied revenue/user/month: $' + rev.toFixed(2) + (md ? '**' : '') + '\\n\\n';\n  out += h2 + 'Decision Note\\n';\n  out += 'Why this pricing structure fits the buyer and the value delivered: \u00b7\\n';\n  return out;\n}\n\nfunction copyToClipboard() {\n  navigator.clipboard.writeText(getExportText(false)).then(() => showToast('Copied to clipboard'));\n}\n\nfunction showToast(msg) {\n  const t = $('toast');\n  t.textContent = msg;\n  t.classList.add('show');\n  setTimeout(() => t.classList.remove('show'), 1800);\n}\n\nfunction onInput() {\n  updatePricingOutputs();\n  save();\n}\n\nwirePickCards();\n['baseFee','unitLabel','pricePerUnit','unitsPerUser'].forEach(k => {\n  $(k).addEventListener('input', onInput);\n});\n\nload();\nif (!localStorage.getItem(KEY)) updatePricingOutputs();\n\u003c/script>\n\u003c/body>\n\u003c/html>\n"];
+
+/* ---------- sliders ---------- */
+var S={}; // id -> {dec,pre,suf}
+function mk(host,list){var h='';list.forEach(function(x){
+  var id=x[0];S[id]={dec:x[5],pre:x[6]||'',suf:x[7]||''};
+  h+='<div class="ctl"><label for="'+id+'">'+x[1]+'</label><output id="o-'+id+'"></output><input type="range" id="'+id+'" min="'+x[2]+'" max="'+x[3]+'" step="'+x[4]+'" value="'+x[8]+'">'+(x[9]?'<small>'+x[9]+'</small>':'')+'</div>'});
+  E(host).innerHTML=h}
+mk('c-team',[
+ ['price','Base price per team / month',3,40,1,0,'€','',10,'Includes the Scout summary'],
+ ['games','Games per team per season',8,48,1,0,'','',32,'17 teams, everyone twice = 32'],
+ ['mins','Minutes of play video per game',10,80,5,0,'','',40],
+ ['months','Season length (months)',2,12,1,0,'','',8,'My assumption'],
+ ['views','Times each minute is watched',1,20,1,0,'','',5]]);
+E('c-mux').innerHTML='<div class="ctl"><label for="enc">Mux encoding tier</label><span><select id="enc"><option value="basic">Basic (free)</option><option value="plus">Plus (paid)</option></select></span></div>';
+var mux=document.createElement('div');E('c-mux').appendChild(mux);mux.id='c-mux2';
+mk('c-mux2',[
+ ['encr','Plus encoding, € / minute',0.01,0.06,0.001,3,'€','',0.031],
+ ['sto','Storage, € / minute / month',0.001,0.006,0.0005,4,'€','',0.003],
+ ['del','Delivery, € / minute watched',0.0005,0.003,0.0001,4,'€','',0.001],
+ ['reqs','Scout reports per team / month',1,30,1,0,'','',6],
+ ['tin','Tokens in per report',1000,20000,500,0,'','',4000],
+ ['tout','Tokens out per report',200,3000,100,0,'','',600],
+ ['tok','Medium tier, € / 1M tokens',0.2,10,0.1,1,'€','',1.5,'Placeholder, check your vendor']]);
+mk('c-pack',[['adopt','Share of teams that use the gameplan conversation',5,100,5,0,'','%',20,'The 20% you chose, not measured']]);
+mk('c-tier',[
+ ['tierS','Small tier, € / 1M tokens',0.1,2,0.05,2,'€','',0.3],
+ ['tierF','Frontier tier, € / 1M tokens',2,20,0.5,1,'€','',6],
+ ['ppp','Auto-tagging from raw video, € per play',0.005,0.1,0.005,3,'€','',0.03,'Not built, placeholder'],
+ ['plays','Plays per team per month',50,500,10,0,'','',200,'4 games x ~50 plays']]);
+mk('c-price',[
+ ['pass','Season pass price (per season)',10,100,5,0,'€','',30,'My draft, not decided'],
+ ['cap','Soft cap: conversations per season',40,300,10,0,'','',100,'About 3 per game over 32 games'],
+ ['conv','Typical conversations per using team / month',1,30,1,0,'','',8,'Average over the season']]);
+mk('c-board',[
+ ['teams','Paying teams',1,200,1,0,'','',10,'Not necessarily one league'],
+ ['before','Price before AI, per team / month',1,20,1,0,'€','',5]]);
+function v(i){return parseFloat(E(i).value)}
+
+/* ---------- cascade data ---------- */
+var SIT=[
+ {n:'Quick check before the game',w:.35,tok:7000,L:2,E:1,S:0},
+ {n:'Full gameplan build',w:.25,tok:12000,L:3,E:4,S:3},
+ {n:'Halftime adjustment',w:.20,tok:8000,L:1,E:2,S:1},
+ {n:'Post-game review',w:.20,tok:10000,L:2,E:3,S:1}];
+var POL=[
+ {k:'mid',n:'Single medium model',m:{L:'M',E:'M',S:'M'}},
+ {k:'front',n:'Single frontier model (quality bar)',m:{L:'F',E:'F',S:'F'}},
+ {k:'blind',n:'Blind 80/20 split',blind:true},
+ {k:'task',n:'Task-routed (L small, E medium, S frontier)',m:{L:'S',E:'M',S:'F'}},
+ {k:'lean',n:'Task-routed lean (L, E small, S frontier)',m:{L:'S',E:'S',S:'F'}}];
+function tierP(t){return t==='S'?v('tierS'):t==='M'?v('tok'):v('tierF')}
+function pol(p){
+  var r={bySit:[],cost:0,tier:{S:0,M:0,F:0},turns:{S:0,M:0,F:0},synN:0,synF:0,expN:0,expS:0,tt:0};
+  SIT.forEach(function(s){var c=0;
+    ['L','E','S'].forEach(function(t){var n=s[t];if(!n)return;
+      var dist;if(p.blind){dist={S:.8,F:.2}}else{dist={};dist[p.m[t]]=1}
+      Object.keys(dist).forEach(function(k){var sh=dist[k],cc=n*s.tok*tierP(k)/1e6*sh;
+        c+=cc;r.tier[k]+=cc*s.w;r.turns[k]+=n*sh*s.w;r.tt+=n*sh*s.w;
+        if(t==='S'){r.synN+=n*s.w*sh;if(k==='F')r.synF+=n*s.w*sh}
+        if(t==='E'){r.expN+=n*s.w*sh;if(k==='S')r.expS+=n*s.w*sh}})});
+    r.bySit.push(c);r.cost+=c*s.w});
+  r.synOK=r.synF/Math.max(r.synN,1e-9)*0;
+  // share of synthesis turns on frontier (per-type denominators)
+  var sN=0,sF=0,eN=0,eS=0;SIT.forEach(function(s){sN+=s.S*s.w;eN+=s.E*s.w});
+  var m=p.blind?{S:{F:.2,S:.8},E:{F:.2,S:.8}}:null;
+  if(p.blind){sF=sN*.2;eS=eN*.8}else{sF=p.m.S==='F'?sN:0;eS=p.m.E==='S'?eN:0}
+  r.synPct=sN?sF/sN*100:100;r.expSmallPct=eN?eS/eN*100:0;
+  var T=r.turns.S+r.turns.M+r.turns.F;r.ratio={S:r.turns.S/T*100,M:r.turns.M/T*100,F:r.turns.F/T*100};
+  return r}
+var POLSEL=E('polsel');POL.forEach(function(p){var o=document.createElement('option');o.value=p.k;o.textContent=p.n;POLSEL.appendChild(o)});POLSEL.value='task';
+function curPol(){return POL.filter(function(p){return p.k===POLSEL.value})[0]}
+
+/* ---------- model ---------- */
+function model(o){o=o||{};
+  var up=v('games')*v('mins')/v('months');
+  var plus=(o.enc||E('enc').value)==='plus',vm=o.vm||1,am=o.am||1,cm=o.cm||1;
+  var encoding=(plus?up*v('encr'):0)*vm,storage=up*v('sto')*(v('months')+1)/2*vm,delivery=up*v('views')*v('del')*vm;
+  var video=encoding+storage+delivery;
+  var scoutReq=(v('tin')+v('tout'))/1e6*v('tok');
+  var scout=v('reqs')*scoutReq*am;
+  var P=pol(curPol());
+  var convPer=Math.min(v('conv')*cm,v('cap')/v('months')),convs=v('adopt')/100*convPer;
+  var kS=convs*P.tier.S*am,kM=convs*P.tier.M*am,kF=convs*P.tier.F*am,killer=kS+kM+kF;
+  var ai=scout+killer;
+  var cost=video+ai,rev=v('price')+v('adopt')/100*v('pass')/v('months');
+  return {up:up,encoding:encoding,storage:storage,delivery:delivery,video:video,scout:scout,scoutReq:scoutReq,P:P,convs:convs,kS:kS,kM:kM,kF:kF,killer:killer,ai:ai,cost:cost,rev:rev,gm:(rev-cost)/rev*100,gp:rev-cost,perConv:P.cost*am}}
+function cls(g){return g>=60?'good':g>=40?'mid':'bad'}
+
+/* ---------- svg helpers ---------- */
+function hbar(rows,o){o=o||{};var W=o.w||900,lw=o.lw||260,rh=28,mx=o.max||Math.max.apply(null,rows.map(function(r){return r.v}))||1;
+  var s='<svg viewBox="0 0 '+W+' '+(rows.length*rh+6)+'">';
+  rows.forEach(function(r,i){var y=i*rh+3,w=Math.max(0,r.v)/mx*(W-lw-110);
+    s+='<text x="0" y="'+(y+18)+'" fill="#e6e9ef" font-size="14">'+r.l+'</text><rect x="'+lw+'" y="'+(y+3)+'" width="'+w+'" height="'+(rh-8)+'" rx="3" fill="'+(r.c||'#4ade80')+'"/><text x="'+(lw+w+8)+'" y="'+(y+18)+'" fill="#e6e9ef" font-size="14">'+r.t+'</text>'});
+  return s+'</svg>'}
+function stack(parts,total,left,leftLabel){var W=900,x=0,s='<svg viewBox="0 0 900 78">';
+  parts.forEach(function(p){var w=p[1]/total*W;s+='<rect x="'+x+'" y="8" width="'+Math.max(w,0)+'" height="42" fill="'+p[2]+'"/>';x+=w});
+  if(left>0){s+='<rect x="'+x+'" y="8" width="'+(left/total*W)+'" height="42" fill="#4ade80" opacity=".85"/><text x="'+(x+8)+'" y="35" fill="#06210f" font-size="15" font-weight="700">'+leftLabel+'</text>'}
+  s+='<text x="0" y="70" fill="#8b94a5" font-size="12">'+eur(0)+'</text><text x="900" y="70" text-anchor="end" fill="#8b94a5" font-size="12">'+eur(total)+'</text></svg>';return s}
+function legend(parts,extra){return '<div class="legend">'+parts.map(function(p){return '<span><i style="background:'+p[2]+'"></i>'+p[0]+' '+eur(p[1])+'</span>'}).join('')+(extra||'')+'</div>'}
+
+/* ---------- scenarios ---------- */
+var SC=[
+ ['Normal',{},'Baseline.'],
+ ['Inference costs 3x',{am:3},'Switch the default model through the model-agnostic package, tighten the router so fewer turns reach frontier, cache reports.'],
+ ['Heaviest segment doubles (2x conversations)',{cm:2},'The pass is flat, so revenue does not follow usage. The soft cap bounds the extra cost and the top-up pack covers what is above it.'],
+ ['Every pass-holder uses the full soft cap',{cm:1000},'Worst case the cap allows. Cost per team is bounded by the cap, so this is the margin floor for the add-on.'],
+ ['Model provider raises prices 50%',{am:1.5},'Fall back to the second provider, run the test set, switch the default.'],
+ ['Video cost 2x',{vm:2},'Move old film to cold storage and cap storage per team.'],
+ ['Mux Plus encoding instead of basic',{enc:'plus'},'Stay on basic encoding unless a coach feature needs more.']];
+
+/* ---------- render ---------- */
+function render(){
+  Object.keys(S).forEach(function(i){E('o-'+i).textContent=S[i].pre+fmt(v(i),S[i].dec)+S[i].suf});
+  var m=model(),share=m.video/m.cost*100;
+  E('k-rev').textContent=eur(m.rev);E('k-cost').textContent=eur(m.cost);
+  var g=E('k-gm');g.textContent=pct(m.gm,1);g.className='big '+cls(m.gm);E('k-share').textContent=pct(share);
+  E('oneline').textContent='"One team pays about '+eur(m.rev)+' a month including the add-on. It costs us about '+eur(m.cost)+', and '+pct(share)+' of that is video storage and playback. The AI is '+eur(m.ai)+' in total, so the AI features are cheap and the thing to watch is video."';
+
+  /* 0 basics */
+  var parts=[['Encoding',m.encoding,'#f472b6'],['Storage',m.storage,'#f59e0b'],['Delivery',m.delivery,'#a78bfa'],['Scout AI',m.scout,'#60a5fa'],['Gameplan AI',m.killer,'#38bdf8']];
+  var tot=Math.max(m.rev,m.cost);
+  E('bar').innerHTML=stack(parts,tot,Math.max(0,m.gp),m.gp>0?'kept '+eur(m.gp):'')+legend(parts,'<span><i style="background:#4ade80"></i>Left over</span>');
+  E('costs').innerHTML='<tr><th>Cost item</th><th class="r">Per team / month</th><th class="r">Share</th></tr>'+parts.map(function(p){return '<tr><td>'+p[0]+'</td><td class="r">'+eur(p[1],3)+'</td><td class="r">'+pct(p[1]/m.cost*100)+'</td></tr>'}).join('')+'<tr><td><b>Total</b></td><td class="r"><b>'+eur(m.cost)+'</b></td><td></td></tr>';
+  var M=Math.round(v('months')),up=m.up,mx=up*M*v('sto'),bw=420/M,st='<svg viewBox="0 0 420 175">';
+  for(var k=1;k<=M;k++){var h=up*k*v('sto')/mx*130;st+='<rect x="'+((k-1)*bw+3)+'" y="'+(150-h)+'" width="'+(bw-6)+'" height="'+h+'" fill="#f59e0b"/><text x="'+((k-1)*bw+bw/2)+'" y="166" text-anchor="middle" fill="#8b94a5" font-size="11">'+k+'</text>'}
+  E('stor').innerHTML=st+'</svg>';
+  E('stornote').textContent='Month 1 stores '+fmt(up,0)+' min ('+eur(up*v('sto'))+'). Month '+M+' stores '+fmt(up*M,0)+' min ('+eur(up*M*v('sto'))+'). The average is used.';
+  var rows=SC.map(function(s){var r=model(s[1]);return {n:s[0],r:r}});
+  E('stress').innerHTML='<tr><th>Scenario</th><th class="r">Cost / team</th><th class="r">Margin</th></tr>'+rows.map(function(x){return '<tr><td>'+x.n+'</td><td class="r">'+eur(x.r.cost)+'</td><td class="r '+cls(x.r.gm)+'"><b>'+pct(x.r.gm,1)+'</b></td></tr>'}).join('');
+  var pl=model({enc:'plus'});
+  E('stressnote').textContent='AI cost tripling moves margin to '+pct(model({am:3}).gm,1)+'. Video cost doubling moves it to '+pct(model({vm:2}).gm,1)+', and the Plus tier to '+pct(pl.gm,1)+'. Green is 60% or more, yellow 40-60%, red below.';
+  var pts=[];for(var i=0;i<=20;i++){var mul=.5+i*.25;pts.push([mul,model({vm:mul}).gm])}
+  var cv='<svg viewBox="0 0 520 190">';[0,40,60,100].forEach(function(t){var y=10+130-(t+20)/120*130;cv+='<line x1="40" x2="510" y1="'+y+'" y2="'+y+'" stroke="#262d38"/><text x="34" y="'+(y+4)+'" text-anchor="end" fill="#8b94a5" font-size="11">'+t+'%</text>'});
+  cv+='<path d="'+pts.map(function(p,i){return (i?'L':'M')+(40+(p[0]-.5)/5*470)+','+(10+130-(Math.max(-20,Math.min(100,p[1]))+20)/120*130)}).join('')+'" fill="none" stroke="#4ade80" stroke-width="2.5"/>';
+  [1,2,3,4,5].forEach(function(t){cv+='<text x="'+(40+(t-.5)/5*470)+'" y="160" text-anchor="middle" fill="#8b94a5" font-size="11">'+t+'x</text>'});
+  E('curve').innerHTML=cv+'<text x="275" y="182" text-anchor="middle" fill="#8b94a5" font-size="11">video cost multiplier</text></svg>';
+
+  /* 1 packaging */
+  var a=v('adopt');
+  E('gauge').innerHTML='<svg viewBox="0 0 900 60"><rect x="0" y="20" width="900" height="16" rx="8" fill="#262d38"/><rect x="0" y="20" width="'+a*9+'" height="16" rx="8" fill="#60a5fa"/><line x1="630" x2="630" y1="10" y2="46" stroke="#fbbf24" stroke-width="2"/><text x="634" y="12" fill="#fbbf24" font-size="12">70% rule</text><text x="'+Math.min(a*9+6,840)+'" y="54" fill="#e6e9ef" font-size="13">'+a+'% of teams</text></svg>';
+  E('packverdict').textContent=a>70?'More than 70% of teams use it, so bundle it into the base plan.':'Under the 70% rule ('+a+'%), so it is an add-on. Bundled at this usage, you would give the cost away to the 80% who never use it.';
+
+  /* 3 cost curve */
+  var P=m.P,per=P.cost;
+  var tagPer=v('plays')*v('ppp');
+  E('feat').innerHTML='<tr><th>Feature</th><th>Complexity</th><th>Model tier</th><th class="r">Cost / request</th><th class="r">Requests / team / month</th><th class="r">Cost / team / month</th></tr>'+
+   '<tr><td>Scout summary</td><td>Medium</td><td>Medium</td><td class="r">'+eur(m.scoutReq,4)+'</td><td class="r">'+fmt(v('reqs'),0)+'</td><td class="r">'+eur(m.scout,3)+'</td></tr>'+
+   '<tr><td>Gameplan conversation</td><td>Complex</td><td>Cascade: '+curPol().n+'</td><td class="r">'+eur(per,3)+'</td><td class="r">'+fmt(m.convs,1)+' (average)</td><td class="r">'+eur(m.killer,3)+'</td></tr>'+
+   '<tr><td>Auto-tagging from raw video <span class="tag">(not built, excluded from totals)</span></td><td>Complex</td><td>Vision / frontier</td><td class="r">'+eur(v('ppp'),3)+' per play</td><td class="r">'+fmt(v('plays'),0)+' plays if used</td><td class="r">'+eur(tagPer)+' if used</td></tr>'+
+   '<tr><td><b>Blended, built features</b></td><td></td><td></td><td class="r"><b>'+eur(m.ai/(v('reqs')+m.convs),4)+'</b></td><td class="r"><b>'+fmt(v('reqs')+m.convs,1)+'</b></td><td class="r"><b>'+eur(m.ai,3)+'</b></td></tr>';
+  E('featnote').textContent='Auto-tagging would cost '+eur(tagPer)+' per team a month if every team used it, about '+pct(tagPer/v('price')*100)+' of the base price, which is why it would need its own price and a cap.';
+  var cols={mid:'#a78bfa',front:'#f87171',blind:'#fbbf24',task:'#4ade80',lean:'#60a5fa'};
+  var allF=pol(POL[1]).cost;
+  E('sit').innerHTML='<tr><th>Game situation</th><th class="r">Mix</th><th class="r">Turns L / E / S</th><th class="r">Tokens per turn</th>'+POL.map(function(p){return '<th class="r">'+p.n.split(' (')[0]+'</th>'}).join('')+'</tr>'+SIT.map(function(s,i){return '<tr><td>'+s.n+'</td><td class="r">'+pct(s.w*100)+'</td><td class="r">'+s.L+' / '+s.E+' / '+s.S+'</td><td class="r">'+fmt(s.tok,0)+'</td>'+POL.map(function(p){return '<td class="r">'+eur(pol(p).bySit[i],3)+'</td>'}).join('')+'</tr>'}).join('');
+  E('pol').innerHTML='<tr><th>Policy</th><th class="r">Cost / conversation</th><th class="r">vs all-frontier</th><th class="r">Turns on small / medium / frontier</th><th class="r">Synthesis turns on frontier</th><th class="r">Explain turns on small</th></tr>'+POL.map(function(p){var r=pol(p);var rec=p.k==='task';
+    return '<tr class="'+(rec?'rec':'')+'"><td>'+p.n+(rec?' &#9733;':'')+'</td><td class="r">'+eur(r.cost,3)+'</td><td class="r">'+(p.k==='front'?'baseline':'-'+pct((1-r.cost/allF)*100))+'</td><td class="r">'+pct(r.ratio.S)+' / '+pct(r.ratio.M)+' / '+pct(r.ratio.F)+'</td><td class="r '+(r.synPct>=99?'good':'bad')+'">'+pct(r.synPct)+'</td><td class="r '+(r.expSmallPct<1?'good':'mid')+'">'+pct(r.expSmallPct)+'</td></tr>'}).join('');
+  var rt=pol(POL[3]),rl=pol(POL[4]),rb=pol(POL[2]),rm=pol(POL[0]);
+  E('polrec').innerHTML='<b>Task-routed</b> (lookups on small, explanations on medium, the gameplan writing on frontier). It costs '+eur(rt.cost,3)+' per conversation, '+pct((1-rt.cost/allF)*100)+' below running everything on frontier, and still puts every gameplan-writing turn on the strong model. Task-routed lean saves a further '+pct((1-rl.cost/rt.cost)*100)+' but moves explanations onto the small model, which I would only do after the test set shows no drop. The single medium model is cheaper ('+eur(rm.cost,3)+') but writes the gameplan on a weaker model.';
+
+  /* 4 pricing */
+  var cc=m.perConv,pass=v('pass'),cap=v('cap'),Mo=v('months');
+  var typSeason=v('conv')*Mo*cc,capSeason=cap*cc;
+  var typM=(pass-typSeason)/pass*100,capM=(pass-capSeason)/pass*100;
+  E('k-ccost').textContent=eur(cc,3);
+  var cme=E('k-cm');cme.textContent=pct(typM);cme.className='big '+cls(typM);
+  E('k-capcost').textContent=eur(capSeason);var cce=E('k-capm');cce.textContent=pct(capM);cce.className='big '+cls(capM);
+  E('cwatch').textContent='A typical pass-holder uses about '+fmt(v('conv')*Mo,0)+' conversations a season and costs '+eur(typSeason)+'. At the cap of '+fmt(cap,0)+' the cost is '+eur(capSeason)+', still '+pct(capM)+' margin on the '+eur(pass,0)+' pass. The main product risk is a coach feeling cut off at the cap, which is why it is soft.';
+  E('capsteps').innerHTML='<b>How it works:</b> at 80% of the cap ('+fmt(cap*.8,0)+') the coach sees what is left. At 100% ('+fmt(cap,0)+') nothing stops, and one tap asks "what did we miss?". If the reason shows our output was at fault (wrong facts, missing situation) the refill is free (+25, up to 2 per season). If it is exploration or new information, a top-up pack is offered (for example 25 more for €5) or lookups continue on the small model. A hard stop at 2x the cap ('+fmt(cap*2,0)+') only catches abuse. Reasons are reviewed monthly and feed the Correction loop.';
+  var typ=v('conv')*Mo,be=pass/cc;
+  var uc=function(n){return (pass-n*cc)/pass*100};
+  E('usechart').innerHTML=hbar([['Typical use ('+fmt(typ,0)+')',typ],['Soft cap ('+fmt(cap,0)+')',cap],['1.5x cap ('+fmt(cap*1.5,0)+')',cap*1.5],['2x cap ('+fmt(cap*2,0)+')',cap*2],['Break-even ('+fmt(be,0)+')',be]].map(function(x){var mg=uc(x[1]);return {l:x[0],v:Math.max(mg,0),t:pct(mg),c:mg>=60?'#4ade80':mg>=40?'#fbbf24':'#f87171'}}),{max:100,lw:240})+'<div class="tag">Margin on the season pass at that many conversations. The pass loses money only beyond about '+fmt(be,0)+' conversations, '+fmt(be/typ,1)+'x typical use.</div>';
+
+  /* 5 board */
+  var T=v('teams'),B=v('before');
+  var wc=model({cm:1000}),m3=model({cm:3});
+  var bRev=B*T,bCogs=m.video*T,bGp=bRev-bCogs,bGm=bGp/bRev*100;
+  var aRev=m.rev*T,aCogs=m.cost*T,aGp=aRev-aCogs,aGm=aGp/aRev*100;
+  E('boardviz').innerHTML=hbar([
+    {l:'Before: monthly revenue',v:bRev,t:eur(bRev,0),c:'#8b94a5'},{l:'Before: monthly cost',v:bCogs,t:eur(bCogs,0),c:'#f87171'},{l:'Before: gross profit',v:Math.max(bGp,0),t:eur(bGp,0)+' ('+pct(bGm)+')',c:'#8b94a5'},
+    {l:'After: monthly revenue',v:aRev,t:eur(aRev,0),c:'#4ade80'},{l:'After: monthly cost',v:aCogs,t:eur(aCogs,0),c:'#f87171'},{l:'After: gross profit',v:Math.max(aGp,0),t:eur(aGp,0)+' ('+pct(aGm)+')',c:'#4ade80'}],{max:Math.max(aRev,bRev)});
+  E('boardtab').innerHTML='<tr><th></th><th class="r">Before (video library)</th><th class="r">After (with AI)</th><th class="r">Change</th></tr>'+
+   '<tr><td>Revenue / month</td><td class="r">'+eur(bRev,0)+'</td><td class="r">'+eur(aRev,0)+'</td><td class="r">'+(aRev>=bRev?'+':'')+eur(aRev-bRev,0)+'</td></tr>'+
+   '<tr><td>COGS / month</td><td class="r">'+eur(bCogs,0)+'</td><td class="r">'+eur(aCogs,0)+'</td><td class="r">+'+eur(aCogs-bCogs,0)+'</td></tr>'+
+   '<tr><td>Gross profit / month</td><td class="r">'+eur(bGp,0)+'</td><td class="r">'+eur(aGp,0)+'</td><td class="r">+'+eur(aGp-bGp,0)+'</td></tr>'+
+   '<tr><td><b>Gross margin</b></td><td class="r"><b>'+pct(bGm,1)+'</b></td><td class="r"><b>'+pct(aGm,1)+'</b></td><td class="r"><b>'+(aGm>=bGm?'+':'')+fmt(aGm-bGm,1)+' pts</b></td></tr>'+
+   '<tr><td>Gross margin if every pass-holder hits the soft cap</td><td class="r"></td><td class="r">'+pct(wc.gm,1)+'</td><td class="r">floor</td></tr>';
+  var v2=model({vm:2}),plr=model({enc:'plus'}),capM2=(pass-cap*cc)/pass*100,typ2=v('conv')*Mo,be2=pass/cc;
+  var btxt='Before, '+T+' teams at '+eur(B,0)+' leave '+pct(bGm)+' margin, because video costs about '+eur(m.video)+' per team whatever the price. After, revenue rises '+pct((aRev/bRev-1)*100)+' (a higher base plus the optional season pass) while AI adds only '+eur(m.ai*T,0)+' of cost, so margin moves from '+pct(bGm)+' to '+pct(aGm)+' and gross profit from '+eur(bGp,0)+' to '+eur(aGp,0)+' a month.';
+  var risks=[
+   'Heavy-use tail: a pass-holder loses money only beyond about '+fmt(be2,0)+' conversations a season ('+fmt(be2/typ2,1)+'x typical). The soft cap with a reason-gated refill bounds it: '+pct(capM2)+' margin on the pass at the cap, '+pct(wc.gm)+' overall floor.',
+   'Video drives margin: it is '+pct(share)+' of cost. Video cost 2x gives '+pct(v2.gm)+' and the paid encoding tier '+pct(plr.gm)+'. Stay on basic encoding and watch storage per team.',
+   'Price acceptance is untested: the margin depends on teams accepting '+eur(v('price'),0)+' instead of '+eur(B,0)+' for Scout. Test with real coaches first.',
+   'Quality drives cost: iterations per accepted gameplan is both a cost driver and a quality signal. We assume heavy iteration means a weak first draft, which still needs validating because it can also be exploration.',
+   'Placeholders: token and Mux prices, and 20% add-on adoption, are estimates not yet measured.'];
+  E('boardtxt').textContent=btxt;
+  E('risks').innerHTML=risks.map(function(r){return '<li>'+r+'</li>'}).join('');
+  E('bh1').textContent=pct(bGm)+' \u2192 '+pct(aGm);E('bh2').textContent=eur(bGp,0)+' \u2192 '+eur(aGp,0);E('bh3').textContent=pct(wc.gm);
+
+  E('mc1').textContent=pct(m.gm,1);E('mc2').textContent=pct(wc.gm,1);E('mc3').textContent=pct(m3.gm,1);
+  /* summary */
+  var sA=model({am:3}),sV=model({vm:2});
+  var talk='TapeMine Scout gives flag football coaches a scouting report on their next opponent from the plays they have tagged. The base plan is '+eur(v('price'),0)+' per team per month, with Scout included, plus an optional season pass at '+eur(v('pass'),0)+' for the gameplan conversation, with a soft cap of '+fmt(v('cap'),0)+' conversations.\n\n'+
+  'One team costs us about '+eur(m.cost)+' a month to serve and brings in about '+eur(m.rev)+', so we keep about '+pct(m.gm)+'. The surprise is where the cost sits: '+pct(share)+' is video storage and playback, and the whole AI side is '+eur(m.ai)+'. Even if AI prices triple, margin only moves to '+pct(sA.gm)+'. What moves it is video: double the video cost and margin is '+pct(sV.gm)+', and the paid Mux tier would take it to '+pct(pl.gm)+'.\n\n'+
+  'The gameplan chat is the only feature whose cost grows with use, so it is sold as a season pass because games are not evenly spread, and a soft cap bounds the worst case at '+pct(wc.gm)+' margin. We route it by turn type, lookups on a small model, explanations on a medium one and the gameplan writing on a frontier model, which costs '+eur(rt.cost,3)+' per conversation, '+pct((1-rt.cost/allF)*100)+' below running everything on frontier, without lowering quality where coaches look.\n\n'+
+  'Compared with the €'+fmt(B,0)+' video-only product, '+T+' teams move from '+pct(bGm)+' to '+pct(aGm)+' gross margin. The open risk is whether coaches will pay the higher base for Scout.';
+  E('talk').value=talk;
+  var cards='';
+  function panel(t,body){return '<section class="panel"><h2>'+t+'</h2>'+body+'</section>'}
+  cards+=panel('Packaging decision','<div class="cards" style="margin-top:8px"><div class="card"><b class="t t-l">Leader</b><div><b>Scout summary</b></div></div><div class="card"><b class="t t-f">Filler</b><div><b>None at the moment</b></div></div><div class="card"><b class="t t-k">Killer</b><div><b>Gameplan conversation</b></div><div class="tag">'+a+'% usage (hypothesis), under the 70% rule: add-on</div></div></div>');
+  var inf1=m.scout+m.kM+m.kF,inf2=m.kS;
+  cards+=panel('Cost model, per team per month','<table><tr><th>Cost category</th><th class="r">Per team / month</th><th>Notes</th></tr>'+
+   '<tr><td>Inference (primary model)</td><td class="r">'+eur(inf1,3)+'</td><td>Scout on medium, plus medium and frontier turns of the gameplan chat</td></tr>'+
+   '<tr><td>Inference (cascading / triage)</td><td class="r">'+eur(inf2,3)+'</td><td>Small-model turns of the gameplan chat</td></tr>'+
+   '<tr><td>Infrastructure</td><td class="r">'+eur(m.encoding+m.delivery,2)+'</td><td>Mux encoding and delivery</td></tr>'+
+   '<tr><td>Data / storage</td><td class="r">'+eur(m.storage,2)+'</td><td>Mux storage, average over the season</td></tr>'+
+   '<tr><td>Human in the loop</td><td class="r">'+eur(0,2)+'</td><td>None yet; coach feedback to be collected</td></tr>'+
+   '<tr><td><b>Total COGS</b></td><td class="r"><b>'+eur(m.cost)+'</b></td><td>'+pct(share)+' of it is video</td></tr></table>'+stack(parts,tot,Math.max(0,m.gp),m.gp>0?'kept '+eur(m.gp):'')+legend(parts));
+  cards+=panel('Cascading strategy (gameplan conversation)','<table><tr><th>Triage model</th><td>Small tier, about '+eur(v('tierS'))+' per 1M tokens</td></tr><tr><th>Medium model</th><td>About '+eur(v('tok'))+' per 1M tokens</td></tr><tr><th>Frontier model</th><td>About '+eur(v('tierF'))+' per 1M tokens</td></tr><tr><th>Routing rule</th><td>By turn type: lookups to small, explanations to medium, gameplan writing to frontier</td></tr><tr><th>Expected cascade ratio</th><td>'+pct(rt.ratio.S)+' small / '+pct(rt.ratio.M)+' medium / '+pct(rt.ratio.F)+' frontier (share of turns)</td></tr></table>'+hbar(POL.map(function(p){var r=pol(p);return {l:p.n.split(' (')[0],v:r.cost,t:eur(r.cost,3),c:cols[p.k]}}),{lw:230}));
+  cards+=panel('Pricing model','<table><tr><th>Current pricing</th><td>'+eur(B,0)+' per team per month (video library, tagging, review)</td></tr><tr><th>Proposed AI pricing</th><td>'+eur(v('price'),0)+' base with Scout included, plus an optional gameplan season pass at '+eur(v('pass'),0)+' with a soft cap of '+fmt(v('cap'),0)+' conversations</td></tr><tr><th>Model</th><td>Outcome / resolution, sold as a season pass (Penetrate strategy)</td></tr><tr><th>Soft cap</th><td>Notice at 80%, then lookups continue on the small model and new full builds offer a top-up pack; hard stop at 2x for abuse</td></tr></table>');
+  cards+=panel('Stress tests',hbar(rows.slice(1).map(function(x){return {l:x.n,v:Math.max(x.r.gm,0),t:pct(x.r.gm,1),c:x.r.gm>=60?'#4ade80':x.r.gm>=40?'#fbbf24':'#f87171'}}),{max:100,lw:330})+'<table style="margin-top:8px"><tr><th>Scenario</th><th>Response</th></tr>'+SC.slice(1).map(function(s){return '<tr><td>'+s[0]+'</td><td>'+s[2]+'</td></tr>'}).join('')+'</table>');
+  cards+=panel('Board one-pager','<table><tr><th></th><th class="r">Before</th><th class="r">After</th></tr><tr><td>Revenue / month ('+T+' teams)</td><td class="r">'+eur(bRev,0)+'</td><td class="r">'+eur(aRev,0)+'</td></tr><tr><td>COGS / month</td><td class="r">'+eur(bCogs,0)+'</td><td class="r">'+eur(aCogs,0)+'</td></tr><tr><td><b>Gross margin</b></td><td class="r"><b>'+pct(bGm,1)+'</b></td><td class="r"><b>'+pct(aGm,1)+'</b></td></tr></table><p>'+btxt+'</p><h3>Risks we are carrying</h3><ul style="margin:4px 0 0;padding-left:18px">'+risks.map(function(r){return '<li>'+r+'</li>'}).join('')+'</ul>');
+  E('sumviz').innerHTML=cards;
+  window.__md=function(){return mdText(m,rt,allF,rows,{bRev:bRev,bCogs:bCogs,bGm:bGm,aRev:aRev,aCogs:aCogs,aGm:aGm,bGp:bGp,aGp:aGp,T:T,B:B,btxt:btxt,risks:risks,talk:talk,inf1:inf1,inf2:inf2,a:a})};
+}
+function mdText(m,rt,allF,rows,b){
+  var t='# Cost Curve & Pricing Strategy\n\n';
+  t+='## Packaging Decision\n\n| | Feature |\n|---|---|\n| **Leader** | Scout summary |\n| **Filler** | None at the moment (candidates later: inconsistent-tag detection, suggested playlists to annotate) |\n| **Killer** | Deep gameplan conversation with coaches |\n| **Killer usage %** | '+b.a+'% (hypothesis, not measured; most coaches work differently for the moment) |\n| **Bundle or add-on** | Leader in the base plan; Killer as an add-on |\n\n70% rule: Killer usage is under 70%, so it is an add-on.\n\n';
+  t+='## Cost Model\n\nPer team per month (one team = one user). Mux prices in USD treated as EUR. All prices are placeholders to check.\n\n| Cost Category | Per-User/Month | Notes |\n|--------------|----------------|-------|\n';
+  t+='| Inference (primary model) | '+eur(b.inf1,3)+' | Scout summary on a medium model, plus medium and frontier turns of the gameplan chat |\n';
+  t+='| Inference (cascading/triage) | '+eur(b.inf2,3)+' | Small-model turns of the gameplan chat |\n';
+  t+='| Infrastructure | '+eur(m.encoding+m.delivery)+' | Mux encoding ('+(E('enc').value==='plus'?'Plus':'basic tier, free')+') and delivery |\n';
+  t+='| Data/storage | '+eur(m.storage)+' | Mux storage, average over an '+fmt(v('months'),0)+'-month season ('+fmt(v('games'),0)+' games x '+fmt(v('mins'),0)+' min) |\n';
+  t+='| Human-in-the-loop | '+eur(0)+' | None yet; simple coach feedback to be collected |\n';
+  t+='| **Total AI COGS** | **'+eur(m.cost)+'** | '+pct(m.video/m.cost*100)+' is video, AI is '+eur(m.ai)+' |\n\n';
+  t+='Auto-tagging from raw video is not built and is excluded from the totals. If every team used it, it would add about '+eur(v('plays')*v('ppp'))+' per team per month.\n\n';
+  t+='## Cascading Strategy\n\nApplies to the gameplan conversation. Compared five policies across four game situations (quick check, full gameplan build, halftime adjustment, post-game review) with each turn typed as Lookup, Explain or Synthesis.\n\n';
+  t+='**Triage model:** small tier, about '+eur(v('tierS'))+' per 1M tokens (lookups from the computed tendencies)\n**Frontier model:** frontier tier, about '+eur(v('tierF'))+' per 1M tokens (writing the structured gameplan); medium tier about '+eur(v('tok'))+' for explanations\n**Routing rule:** by turn type, not a fixed percentage. Lookups to small, explanations to medium, gameplan synthesis to frontier.\n**Expected cascade ratio:** '+pct(rt.ratio.S)+' small / '+pct(rt.ratio.M)+' medium / '+pct(rt.ratio.F)+' frontier (share of turns)\n\n';
+  t+='| Policy | Cost per conversation | vs all-frontier | Synthesis turns on frontier |\n|---|---|---|---|\n';
+  POL.forEach(function(p){var r=pol(p);t+='| '+p.n+' | '+eur(r.cost,3)+' | '+(p.k==='front'?'baseline':'-'+pct((1-r.cost/allF)*100))+' | '+pct(r.synPct)+' |\n'});
+  t+='\nA blind 80/20 split is cheaper but sends the gameplan writing to the small model 80% of the time, so it is rejected.\n\n';
+  t+='## Pricing Model\n\n**Current pricing:** '+eur(b.B,0)+' per team per month (video library, tagging, review)\n**Proposed AI pricing:** '+eur(v('price'),0)+' per team per month with the Scout summary included, plus an optional gameplan season pass at '+eur(v('pass'),0)+' per season (estimated cost per conversation '+eur(m.perConv,3)+')\n**Model:** outcome / resolution, sold as a season pass because games are not evenly distributed (Penetrate strategy)\n\n**Soft cap:** '+fmt(v('cap'),0)+' conversations per season (about 3 per game; a typical team uses about '+fmt(v('conv')*v('months'),0)+'). It is a threshold, not a wall, because a coach who keeps iterating is often telling us the first draft was not good enough. At 80% the coach sees what is left. At 100% nothing stops and one tap asks what was missed: if our output was at fault (wrong facts, missing situation) the refill is free (+25, up to 2 per season); if it is exploration or new information, a top-up pack is offered or lookups continue on the small model. A hard stop at '+fmt(v('cap')*2,0)+' only catches abuse, and reasons are reviewed monthly to feed the Correction loop. The pass loses money only beyond about '+fmt(v('pass')/m.perConv,0)+' conversations a season; at the cap a team costs about '+eur(v('cap')*m.perConv)+' against the '+eur(v('pass'),0)+' pass.\n\n';
+  t+='## Stress Tests\n\n| Scenario | Impact on Margin | Response |\n|----------|-----------------|----------|\n';
+  rows.slice(1).forEach(function(x,i){t+='| '+x.n+' | '+pct(x.r.gm,1)+' (from '+pct(rows[0].r.gm,1)+') | '+SC[i+1][2]+' |\n'});
+  t+='\n## Board One-Pager\n\n**Before (traditional SaaS):** '+b.T+' teams x '+eur(b.B,0)+' = '+eur(b.bRev,0)+' per month; COGS '+eur(b.bCogs,0)+' (video); gross margin '+pct(b.bGm,1)+'\n';
+  t+='**After (AI-enabled):** '+b.T+' teams x '+eur(v('price'),0)+' base plus the optional season pass = '+eur(b.aRev,0)+' per month; COGS '+eur(b.aCogs,0)+' (video plus AI); gross margin '+pct(b.aGm,1)+'\n';
+  t+='**Soft-cap floor:** if every pass-holder used the full cap, margin would be '+pct(model({cm:1000}).gm,1)+'.\n**Net margin shift:** '+(b.aGm>=b.bGm?'+':'')+fmt(b.aGm-b.bGm,1)+' points; gross profit from '+eur(b.bGp,0)+' to '+eur(b.aGp,0)+' per month. '+b.btxt+'\n\n';
+  t+='**Risks:**\n'+b.risks.map(function(r){return '- '+r}).join('\n')+'\n\n';
+  t+='## Summary\n\n'+b.talk.split('\n\n').join('\n\n')+'\n';
+  return t}
+
+/* ---------- forms ---------- */
+var f1=E('fr-margin'),f2=E('fr-pricing');f1.srcdoc=forms[0];f2.srcdoc=forms[1];
+function setv(d,id,val){var el=d.getElementById(id);if(el){el.value=val;el.dispatchEvent(new Event('input',{bubbles:true}))}}
+function wire(){
+  if(!E('sync').checked)return;var m=model();
+  try{var d=f1.contentDocument,w=f1.contentWindow;if(d&&d.getElementById('requests')){var rq=v('reqs')+m.convs;
+    setv(d,'requests',rq.toFixed(1));setv(d,'costPerReq',(m.ai/rq).toFixed(4));setv(d,'revenue',m.rev.toFixed(2));setv(d,'otherCogs',m.video.toFixed(2));if(w.calc)w.calc()}}catch(e){}
+  try{var d2=f2.contentDocument,w2=f2.contentWindow;if(d2&&d2.getElementById('baseFee')){
+    if(w2.selectStrategy)w2.selectStrategy('penetrate');if(w2.selectModel)w2.selectModel('outcome');
+    setv(d2,'baseFee',String(v('price')));setv(d2,'unitLabel','Gameplan season pass (soft cap '+v('cap')+' conversations)');setv(d2,'pricePerUnit',v('pass').toFixed(2));setv(d2,'unitsPerUser',(v('adopt')/100/v('months')).toFixed(3));
+    if(w2.updatePricingOutputs)w2.updatePricingOutputs();if(w2.save)w2.save()}}catch(e){}
+  fit()}
+function fit(){[f1,f2].forEach(function(fr){try{var h=fr.contentDocument.documentElement.scrollHeight;if(h>200)fr.style.height=(h+10)+'px'}catch(e){}})}
+function all(){render();wire()}
+f1.addEventListener('load',function(){wire();fit()});f2.addEventListener('load',function(){wire();fit()});
+setInterval(fit,700);
+document.querySelectorAll('input[type=range]').forEach(function(i){i.addEventListener('input',all)});
+E('enc').addEventListener('change',all);POLSEL.addEventListener('change',all);E('sync').addEventListener('change',wire);
+document.querySelectorAll('#tabs button').forEach(function(b){b.addEventListener('click',function(){
+  document.querySelectorAll('#tabs button').forEach(function(x){x.classList.toggle('on',x===b)});
+  document.querySelectorAll('.tabpane').forEach(function(p){p.classList.toggle('on',p.id==='tab-'+b.dataset.t)});
+  wire();fit();window.scrollTo(0,0)})});
+function cp(btn,txt){var done=function(){var o=btn.textContent;btn.textContent='Copied';setTimeout(function(){btn.textContent=o},1200)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,function(){})}else{var t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();try{document.execCommand('copy');done()}catch(e){}document.body.removeChild(t)}}
+E('copytalk').onclick=function(){cp(E('copytalk'),E('talk').value)};
+E('copymd').onclick=function(){cp(E('copymd'),window.__md())};
+all();
+})();
+</script>
+</body>
+</html>
