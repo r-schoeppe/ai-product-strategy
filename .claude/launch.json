@@ -4,8 +4,26 @@
     {
       "name": "margin-workbook",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8770", "--directory", "03-the-margin"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8770",
+        "--directory",
+        "03-the-margin"
+      ],
       "port": 8770
+    },
+    {
+      "name": "trust-workbook",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8771",
+        "--directory",
+        "04-the-contract"
+      ],
+      "port": 8771
     }
   ]
 }
