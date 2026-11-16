@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TapeMine Feedback Concepts</title>
+<style>
+:root{--bg:#0e1116;--panel:#171c24;--line:#262d38;--text:#e6e9ef;--mute:#8b94a5;--accent:#4ade80;--warn:#fbbf24;--bad:#f87171;--blue:#60a5fa}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:22px 16px 70px}
+h1{margin:0;font-size:24px}h1 span{color:var(--accent)}
+h2{margin:0 0 4px;font-size:18px}
+.lead{color:var(--mute);margin:4px 0 0}.tag{font-size:12px;color:var(--mute)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:16px}
+.grid{display:grid;gap:14px}
+@media(min-width:820px){.g2{grid-template-columns:3fr 2fr}.g3{grid-template-columns:1fr 1fr}}
+button,select,input[type=text],textarea{font:inherit;border-radius:8px;border:1px solid var(--line);padding:6px 12px;background:var(--bg);color:var(--text)}
+button{cursor:pointer}button:hover{border-color:var(--accent)}
+button.on{background:var(--accent);color:#06210f;border-color:var(--accent);font-weight:700}
+button.pri{background:var(--accent);color:#06210f;border-color:var(--accent);font-weight:600}
+button.sec{color:var(--mute)}
+textarea,input[type=text]{width:100%}
+.tabs{display:flex;gap:6px;margin-top:16px;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5}
+.tabpane{display:none}.tabpane.on{display:block}
+.card{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}
+.card.used{border-color:var(--accent)}.card.flag{border-color:var(--warn)}
+.badge{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:1px 9px;margin-right:6px}
+.b-hi{background:rgba(74,222,128,.18);color:var(--accent)}.b-me{background:rgba(251,191,36,.18);color:var(--warn)}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.chip{border-radius:999px;padding:3px 12px;font-size:13px}
+.log{background:#0a0d12;border:1px solid var(--line);border-radius:8px;padding:8px;max-height:380px;overflow:auto;font:12px/1.5 ui-monospace,monospace}
+.log div{border-bottom:1px dashed var(--line);padding:4px 0;color:#9fb0c8}.log div:last-child{border:0}
+.log b{color:var(--accent)}
+.toast{position:sticky;bottom:10px;background:#1f2733;border:1px solid var(--warn);border-radius:10px;padding:10px;margin-top:10px}
+.note{border-left:3px solid var(--warn);background:var(--bg);padding:6px 12px;border-radius:0 8px 8px 0;margin-top:10px;font-size:14px}
+.good{border-left-color:var(--accent)}
+table{width:100%;border-collapse:collapse}td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:12px;color:var(--mute);font-weight:500}
+.opt{flex:1;min-width:200px;border:1px solid var(--line);border-radius:10px;padding:10px;background:#12171f}
+.opt.sel{border-color:var(--accent)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--warn);margin-right:4px}
+.ctl{display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin:8px 0}.ctl input[type=range]{grid-column:1/3;width:100%;accent-color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<h1>TapeMine <span>Feedback Concepts</span></h1>
+<p class="lead">Three ways for a coach to say "this suggestion doesn't fit", on the same gameplan sheet. Try each one, then read the log on the right: that is what we would learn from. Mock data.</p>
+
+<div class="tabs" id="tabs">
+  <button class="on" data-t="A">A Doesn't-fit button</button>
+  <button data-t="B">B Just edit, we notice</button>
+  <button data-t="C">C Pick between options</button>
+  <button data-t="D">Compare</button>
+</div>
+
+<div class="tabpane on" id="tab-A">
+  <section class="panel">
+    <h2>A: an explicit "Doesn't fit" on every suggestion</h2>
+    <p class="lead">One tap, an optional reason, and the coach can still write their own version. The most direct form of feedback.</p>
+    <div class="grid g2">
+      <div><div id="sheetA"></div><div class="tag" id="progA" style="margin-top:8px"></div></div>
+      <div><div class="tag">WHAT THE OWNER SEES</div><div class="log" id="logA"><div>nothing yet</div></div>
+        <div class="row"><button id="monthA">Simulate monthly review</button><button class="sec" id="resetA">Reset</button></div><div id="loopA"></div></div>
+    </div>
+  </section>
+</div>
+
+<div class="tabpane" id="tab-B">
+  <section class="panel">
+    <h2>B: no button, the coach just edits and we notice</h2>
+    <p class="lead">Edit the share or the suggestion directly. Small edits are saved quietly. A big edit gets one non-blocking "why?" with quick answers, which can be ignored.</p>
+    <div class="ctl"><label for="thr">A "significant" edit moves a tell's share by at least</label><output id="o-thr"></output><input type="range" id="thr" min="5" max="40" value="20"></div>
+    <div class="grid g2">
+      <div><div id="sheetB"></div><div id="toastB"></div></div>
+      <div><div class="tag">WHAT THE OWNER SEES</div><div class="log" id="logB"><div>nothing yet</div></div><div class="row"><button class="sec" id="resetB">Reset</button></div></div>
+    </div>
+  </section>
+</div>
+
+<div class="tabpane" id="tab-C">
+  <section class="panel">
+    <h2>C: choose between options, the choice is the feedback</h2>
+    <p class="lead">Each section offers the suggestion and an alternative from the coach's playbook. Picking one teaches us the preference without any form. After the game, one tap records what worked.</p>
+    <div class="grid g2">
+      <div><div id="sheetC"></div>
+        <div class="row"><button id="endC">Game is over, record results</button><button id="nextC">Prepare next game</button><button class="sec" id="resetC">Reset</button></div></div>
+      <div><div class="tag">WHAT THE OWNER SEES</div><div class="log" id="logC"><div>nothing yet</div></div></div>
+    </div>
+  </section>
+</div>
+
+<div class="tabpane" id="tab-D">
+  <section class="panel">
+    <h2>How they compare</h2>
+    <table>
+      <tr><th></th><th>A Doesn't-fit button</th><th>B Edit, we notice</th><th>C Pick between options</th></tr>
+      <tr><td>Coach effort</td><td>One tap, plus an optional reason</td><td>None, it is part of editing</td><td>One tap, it is the normal way to choose</td></tr>
+      <tr><td>Interruption</td><td>Only when the coach chooses</td><td>Rare: a quiet prompt after a big edit</td><td>None, but it needs real alternatives on screen</td></tr>
+      <tr><td>Signal richness</td><td>Reason in their words, plus what replaced it</td><td>The exact edit, a rich before-and-after</td><td>A clean preference between two options, plus outcomes</td></tr>
+      <tr><td>Feels like "I can push back"</td><td>Strongest: an explicit voice</td><td>Medium: it is invisible, so it does not say "we listen"</td><td>Medium: it is a choice, not a complaint</td></tr>
+      <tr><td>Risk of noise</td><td>Low-ish; some taps without a reason</td><td>Needs the threshold tuned</td><td>Only works where the playbook has real alternatives</td></tr>
+      <tr><td>Works with a thin playbook</td><td>Yes</td><td>Yes</td><td>No, it needs two real options</td></tr>
+      <tr><td>Cost to build</td><td>Small</td><td>Medium (diff and threshold logic)</td><td>Larger (alternatives, playbook, outcomes)</td></tr>
+    </table>
+    <div class="note good"><b>My take:</b> A and B together cover what you described. B is the quiet background trigger, A is the visible "doesn't fit" voice that makes coaches feel heard. C is the most powerful for learning, but it needs a populated playbook, so it is a later step.</div>
+    <div class="note">Open question for you: how visible should the "we noticed your edit" in B be? Fully silent is simplest, but a small "noted" marker is what makes the coach trust that feedback exists.</div>
+  </section>
+</div>
+</main>
+
+<script>
+(function(){
+var E=function(i){return document.getElementById(i)};
+var S=[
+ {id:'s1',sit:'3rd & short',tell:'Quick slant, 13 of 14 plays',share:93,tier:'hi',sug:'Press the slot and jump the short hook',alt:'Zone with a robber under the slot'},
+ {id:'s2',sit:'3rd & long',tell:'Deep post, 11 of 13 plays',share:85,tier:'hi',sug:'Keep a safety deep middle, take away the post',alt:'Rush four, drop two deep'},
+ {id:'s3',sit:'PAT',tell:'Fade, 9 of 10 plays',share:90,tier:'hi',sug:'Bracket the back shoulder, rotate a corner to the pylon',alt:'Put the tallest defender on the fade side'},
+ {id:'s4',sit:'Red zone',tell:'Bunch Left means Fade, 5 of 5 plays',share:100,tier:'me',sug:'Consider a man look on Bunch Left',alt:'Switch the bunch with a zone call'}];
+function badge(t){return t==='hi'?'<span class="badge b-hi">Strong evidence</span>':'<span class="badge b-me">Some evidence</span>'}
+var LOG={A:[],B:[],C:[]};
+function log(k,o){LOG[k].unshift(o);var h=LOG[k].map(function(x){return '<div><b>'+x.type+'</b> '+Object.keys(x).filter(function(q){return q!=='type'}).map(function(q){return q+'='+JSON.stringify(x[q])}).join(' ')+'</div>'}).join('');E('log'+k).innerHTML=h||'<div>nothing yet</div>'}
+function clearLog(k){LOG[k]=[];E('log'+k).innerHTML='<div>nothing yet</div>'}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+
+/* tabs */
+document.querySelectorAll('#tabs button').forEach(function(b){b.onclick=function(){document.querySelectorAll('#tabs button').forEach(function(x){x.classList.toggle('on',x===b)});document.querySelectorAll('.tabpane').forEach(function(p){p.classList.toggle('on',p.id==='tab-'+b.dataset.t)})}});
+
+/* ---------- A ---------- */
+var A={};var REASONS=['Misreads the opponent','Does not fit our playbook','We tried it','Other'];
+function resetA(){A={};S.forEach(function(s){A[s.id]={st:'open',reason:null,step:0}});clearLog('A');E('loopA').innerHTML='';drawA()}
+function drawA(){
+  E('sheetA').innerHTML=S.map(function(s){var a=A[s.id];
+   var h='<div class="card '+(a.st==='used'?'used':a.st==='flag'||a.st==='mine'||a.st==='out'?'flag':'')+'"><div>'+badge(s.tier)+'<b>'+s.sit+'</b> <span class="tag">'+s.tell+'</span></div>';
+   if(a.st==='open'){h+='<p style="margin:8px 0 4px">'+esc(s.sug)+'</p><div class="row"><button class="pri" data-a="use" data-id="'+s.id+'">Use it</button><button data-a="nofit" data-id="'+s.id+'">Doesn\'t fit</button></div>'}
+   else if(a.st==='asking'){h+='<p style="margin:8px 0 4px;color:var(--mute);text-decoration:line-through">'+esc(s.sug)+'</p><div class="tag">What is off? (optional)</div><div class="row">'+REASONS.map(function(r){return '<button class="chip '+(a.reason===r?'on':'')+'" data-a="reason" data-id="'+s.id+'" data-r="'+r+'">'+r+'</button>'}).join('')+'</div><div class="row"><input type="text" id="note-'+s.id+'" placeholder="One line in your words, if you like"></div><div class="row"><button class="pri" data-a="send" data-id="'+s.id+'">Send</button><button class="sec" data-a="send" data-id="'+s.id+'">Skip the reason</button></div>'}
+   else if(a.st==='flag'){h+='<div class="tag" style="margin:8px 0">Noted. You decide what goes in the sheet.</div><textarea id="mine-'+s.id+'" rows="2" placeholder="What goes in the sheet instead?"></textarea><div class="row"><button class="pri" data-a="mine" data-id="'+s.id+'">Use my version</button><button class="sec" data-a="out" data-id="'+s.id+'">Leave this section out</button></div>'}
+   else if(a.st==='used'){h+='<p style="margin:8px 0 0">'+esc(s.sug)+'</p><div class="tag">In the sheet</div>'}
+   else if(a.st==='mine'){h+='<p style="margin:8px 0 0">'+esc(a.mine)+'</p><div class="tag"><span class="dot"></span>Your version is in the sheet. Your note was sent.</div>'}
+   else if(a.st==='out'){h+='<p style="margin:8px 0 0" class="tag">Left out of the sheet. Your note was sent.</p>'}
+   return h+'</div>'}).join('');
+  var ready=S.filter(function(s){return ['used','mine','out'].indexOf(A[s.id].st)>=0}).length;E('progA').textContent='Sheet: '+ready+' of '+S.length+' sections decided';
+}
+E('sheetA').onclick=function(e){var t=e.target,a=t.dataset.a,id=t.dataset.id;if(!a)return;var s=S.filter(function(x){return x.id===id})[0],st=A[id];
+  if(a==='use'){st.st='used';log('A',{type:'accept',section:s.sit,tier:s.tier})}
+  else if(a==='nofit'){st.st='asking'}
+  else if(a==='reason'){st.reason=st.reason===t.dataset.r?null:t.dataset.r}
+  else if(a==='send'){var n=E('note-'+id);log('A',{type:'doesnt_fit',section:s.sit,suggestion:s.sug,evidence:s.tell,reason:st.reason||'none',note:n&&n.value||''});st.st='flag'}
+  else if(a==='mine'){var m=E('mine-'+id).value.trim();if(!m)return;st.mine=m;st.st='mine';log('A',{type:'replacement',section:s.sit,replaced_with:m})}
+  else if(a==='out'){st.st='out';log('A',{type:'section_left_out',section:s.sit})}
+  drawA()};
+E('monthA').onclick=function(){var f=LOG.A.filter(function(x){return x.type==='doesnt_fit'});
+  E('loopA').innerHTML=f.length?'<div class="note good"><b>Monthly look (owner):</b> '+f.length+' flagged item(s). Patterns become improvements or test cases. Optional note back to the coach: "You said <i>'+esc(f[f.length-1].reason)+'</i> on '+esc(f[f.length-1].section)+'. We changed how it is suggested."</div>':'<div class="note">Nothing flagged yet. Try "Doesn\'t fit" first.</div>'};
+E('resetA').onclick=resetA;resetA();
+
+/* ---------- B ---------- */
+var B={},ORIG={};
+function words(s){return String(s).toLowerCase().split(/\W+/).filter(Boolean)}
+function overlap(a,b){var x=words(a),y=words(b);if(!x.length&&!y.length)return 1;var inter=x.filter(function(w){return y.indexOf(w)>=0}).length;return inter/Math.max(x.length,y.length,1)}
+function drawB(){E('sheetB').innerHTML=S.map(function(s){return '<div class="card" id="cb-'+s.id+'"><div>'+badge(s.tier)+'<b>'+s.sit+'</b> <span class="tag">'+s.tell.split(',')[0]+'</span></div><div class="row"><label class="tag">Share %</label><input type="number" min="0" max="100" value="'+B[s.id].share+'" data-b="share" data-id="'+s.id+'" style="width:80px;border:1px solid var(--line);border-radius:8px;padding:6px;background:var(--bg);color:var(--text)"> <span class="tag">'+s.tell.split(', ')[1]+'</span></div><textarea rows="2" data-b="text" data-id="'+s.id+'" style="margin-top:8px">'+esc(B[s.id].text)+'</textarea><div class="tag" id="st-'+s.id+'"></div></div>'}).join('')}
+function resetB(){B={};ORIG={};S.forEach(function(s){B[s.id]={share:s.share,text:s.sug};ORIG[s.id]={share:s.share,text:s.sug}});clearLog('B');E('toastB').innerHTML='';drawB()}
+E('thr').oninput=function(){E('o-thr').textContent=E('thr').value+' points'};E('o-thr').textContent='20 points';
+E('sheetB').addEventListener('change',function(e){var t=e.target,id=t.dataset.id,k=t.dataset.b;if(!k)return;var s=S.filter(function(x){return x.id===id})[0];
+  var share=k==='share'?parseFloat(t.value)||0:B[id].share,text=k==='text'?t.value:B[id].text;B[id]={share:share,text:text};
+  var dShare=Math.abs(share-ORIG[id].share),ov=overlap(text,ORIG[id].text),changedCall=ov<0.5,thr=+E('thr').value;
+  var sig=dShare>=thr||changedCall;
+  log('B',{type:sig?'significant_edit':'minor_edit',section:s.sit,share_change:dShare,call_overlap:Math.round(ov*100)+'%',flagged:sig});
+  E('st-'+id).innerHTML=sig?'<span class="dot"></span>Saved. Your version is used. We noted the change.':'Saved. Your version is used.';
+  if(sig){E('toastB').innerHTML='<div class="toast"><b>You changed '+esc(s.sit)+'.</b> <span class="tag">Want to say why? Totally optional.</span><div class="row">'+['Opponent changed','Better for our team','The data looks wrong','Skip'].map(function(r){return '<button class="chip" data-w="'+r+'" data-id="'+id+'">'+r+'</button>'}).join('')+'</div></div>'}});
+E('toastB').onclick=function(e){var w=e.target.dataset.w;if(!w)return;var id=e.target.dataset.id,s=S.filter(function(x){return x.id===id})[0];log('B',{type:'edit_reason',section:s.sit,reason:w==='Skip'?'skipped':w});E('toastB').innerHTML=''};
+E('resetB').onclick=resetB;resetB();
+
+/* ---------- C ---------- */
+var C={},PICK={};
+function resetC(){C={};S.forEach(function(s){C[s.id]={st:'open',swap:!!(PICK[s.id]&&PICK[s.id]==='alt'),res:null}});if(!Object.keys(PICK).length)PICK={};clearLog('C');drawC()}
+function hardReset(){PICK={};resetC()}
+function drawC(){E('sheetC').innerHTML=S.map(function(s){var c=C[s.id],first=c.swap?s.alt:s.sug,second=c.swap?s.sug:s.alt;
+  var h='<div class="card"><div>'+badge(s.tier)+'<b>'+s.sit+'</b> <span class="tag">'+s.tell+'</span></div>';
+  if(c.st==='open'){h+='<div class="row" style="align-items:stretch"><div class="opt"><div class="tag">'+(c.swap?'Your pick from last time':'Suggested')+'</div><p style="margin:4px 0">'+esc(first)+'</p><button class="pri" data-c="pick" data-w="'+(c.swap?'alt':'sug')+'" data-id="'+s.id+'">Use this</button></div><div class="opt"><div class="tag">'+(c.swap?'Suggested':'From your playbook')+'</div><p style="margin:4px 0">'+esc(second)+'</p><button data-c="pick" data-w="'+(c.swap?'sug':'alt')+'" data-id="'+s.id+'">Use this</button></div></div><div class="row"><button class="sec" data-c="own" data-id="'+s.id+'">Neither, I will write my own</button></div>'}
+  else if(c.st==='own'){h+='<textarea id="own-'+s.id+'" rows="2" placeholder="Your own call"></textarea><div class="row"><button class="pri" data-c="ownok" data-id="'+s.id+'">Use my version</button></div>'}
+  else{h+='<p style="margin:8px 0 0">'+esc(c.text)+'</p><div class="tag">In the sheet</div>';
+    if(c.showRes){h+='<div class="row"><span class="tag">Did it work?</span><button class="'+(c.res==='worked'?'on':'')+'" data-c="res" data-v="worked" data-id="'+s.id+'">Worked</button><button class="'+(c.res==='did not'?'on':'')+'" data-c="res" data-v="did not" data-id="'+s.id+'">Did not</button></div>'}
+    if(c.next)h+='<div class="note good">Next time: your pick comes first.</div>'}
+  return h+'</div>'}).join('')}
+E('sheetC').onclick=function(e){var t=e.target,a=t.dataset.c,id=t.dataset.id;if(!a)return;var s=S.filter(function(x){return x.id===id})[0],c=C[id];
+  if(a==='pick'){var which=t.dataset.w,txt=which==='sug'?s.sug:s.alt,other=which==='sug'?s.alt:s.sug;c.st='done';c.text=txt;c.which=which;PICK[id]=which;if(which==='alt')c.next=true;log('C',{type:'preference',section:s.sit,chose:txt,over:other,chose_alternative:which==='alt'})}
+  else if(a==='own'){c.st='own'}
+  else if(a==='ownok'){var v=E('own-'+id).value.trim();if(!v)return;c.st='done';c.text=v;c.which='own';PICK[id]='own';log('C',{type:'neither',section:s.sit,suggested:s.sug,alternative:s.alt,wrote:v})}
+  else if(a==='res'){c.res=t.dataset.v;log('C',{type:'outcome',section:s.sit,used:c.text,result:c.res})}
+  drawC()};
+E('endC').onclick=function(){S.forEach(function(s){if(C[s.id].st==='done')C[s.id].showRes=true});drawC()};
+E('nextC').onclick=function(){C={};S.forEach(function(s){C[s.id]={st:'open',swap:PICK[s.id]==='alt',res:null}});log('C',{type:'next_game_prepared',alternatives_moved_first:S.filter(function(s){return PICK[s.id]==='alt'}).map(function(s){return s.sit})});drawC()};
+E('resetC').onclick=hardReset;resetC();
+})();
+</script>
+</body>
+</html>

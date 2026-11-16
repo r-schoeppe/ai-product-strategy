@@ -24,6 +24,18 @@
         "04-the-contract"
       ],
       "port": 8771
+    },
+    {
+      "name": "feedback-prototypes",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8772",
+        "--directory",
+        "05-the-guardrails"
+      ],
+      "port": 8772
     }
   ]
 }
