@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TapeMine Pilot Pitch</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* TapeMine pitch deck. Tokens from the TapeMine design system: dark "film room" first, one light statement tone. */
+:root {
+  --bg: #0f1113;
+  --surface: #16191c;
+  --raised: #1d2125;
+  --line: #2a2f35;
+  --line-strong: #646c77;
+  --ink: #eceef0;
+  --muted: #a3a9b1;
+  --faint: #868d96;
+  --offense: #6f9bff;
+  --defense: #f0a33a;
+  --good: #4cc38a;
+  --critical: #ff7a6b;
+  --paper: #eceef0;
+  --paper-ink: #15181b;
+  --paper-muted: #4f5761;
+  --paper-card: #dfe3e7;
+}
+body { font-family: 'Public Sans', Arial, sans-serif; font-size: 32px; color: var(--ink); }
+section { box-sizing: border-box; padding: 128px 128px 160px; background: var(--bg); color: var(--ink); display: flex; flex-direction: column; gap: 48px; }
+section.sf { background: var(--surface); }
+section.lt { background: var(--paper); color: var(--paper-ink); }
+section.cover { justify-content: space-between; }
+
+h1, h2, h3 { font-family: 'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight: 600; color: inherit; }
+h1 { font-size: 120px; line-height: 1.02; }
+h1.h1s { font-size: 104px; }
+h2 { font-size: 80px; line-height: 1.05; }
+h3 { font-size: 44px; line-height: 1.1; }
+p { font-size: 32px; line-height: 1.4; }
+
+.eyebrow { font-size: 24px; line-height: 1.2; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.lt .eyebrow { color: var(--paper-muted); }
+.lede { font-size: 36px; line-height: 1.35; color: var(--muted); }
+.lt .lede { color: var(--paper-muted); }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
+.grid4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 24px; }
+
+.card { background: var(--surface); border-radius: 10px; padding: 40px; display: flex; flex-direction: column; gap: 20px; }
+.sf .card { background: var(--raised); }
+.lt .card { background: var(--paper-card); }
+.card.edge { border: 2px solid var(--ink); }
+.lt .card.edge { border: 2px solid var(--paper-ink); }
+
+.stat { font-family: 'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight: 600; font-size: 112px; line-height: 1; color: inherit; }
+.stat.huge { font-size: 240px; }
+.ct { font-size: 40px; line-height: 1.1; }
+.cb { font-size: 30px; line-height: 1.4; color: var(--muted); }
+.lt .cb { color: var(--paper-muted); }
+.mono { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 28px; line-height: 1.3; color: var(--faint); }
+
+.lt .num { color: var(--paper-muted); }
+.gdata { align-self: flex-start; font-size: 24px; line-height: 1.3; font-weight: 600; background: var(--good); color: var(--paper-ink); padding: 8px 16px; border-radius: 10px; }
+.vw { background: #0a0b0c; border-radius: 10px; height: 120px; display: flex; align-items: center; justify-content: center; }
+.chipx { font-size: 24px; line-height: 1.3; border: 2px solid var(--line-strong); border-radius: 6px; padding: 6px 12px; color: var(--ink); }
+.chipx.off { background: rgba(111, 155, 255, 0.16); border-color: var(--offense); }
+.chipx.res { background: rgba(236, 238, 240, 0.12); border-color: var(--ink); }
+.mini { background: var(--bg); border-radius: 10px; padding: 14px 16px; display: flex; gap: 14px; align-items: center; }
+.mt { font-size: 26px; line-height: 1.25; font-weight: 600; color: var(--ink); }
+.ms { font-size: 24px; line-height: 1.3; color: var(--muted); }
+.mk.sm { width: 10px; height: 56px; }
+.src { position: absolute; left: 128px; bottom: 64px; width: 1664px; font-size: 24px; line-height: 1.3; color: var(--faint); }
+.lt .src { color: var(--paper-muted); }
+
+.row { display: flex; gap: 24px; align-items: center; background: var(--raised); border-radius: 10px; padding: 24px 28px; }
+.sf .row { background: var(--bg); }
+.mk { width: 16px; height: 72px; border-radius: 4px; flex: none; }
+.mk.def { background: var(--defense); }
+.mk.off { background: var(--offense); }
+.rowt { font-size: 30px; line-height: 1.3; font-weight: 600; color: var(--ink); }
+
+.list { font-size: 30px; line-height: 1.4; color: var(--ink); }
+.list li { margin: 6px 0; }
+
+.bar { display: flex; height: 56px; border-radius: 6px; }
+.bar .seg1 { background: var(--ink); }
+.bar .seg2 { background: var(--defense); }
+.lg { display: flex; flex-wrap: wrap; gap: 12px 36px; }
+.lgi { display: flex; gap: 12px; align-items: center; }
+.sw { width: 28px; height: 28px; border-radius: 4px; flex: none; }
+.lgt { font-size: 26px; line-height: 1.2; color: var(--muted); }
+.eb { display: flex; flex-direction: column; gap: 8px; }
+.ebl { font-size: 30px; line-height: 1.2; font-weight: 600; color: var(--ink); }
+.ebar { display: flex; height: 80px; border-radius: 6px; overflow: hidden; }
+.ebc { font-size: 28px; line-height: 1.3; color: var(--muted); }
+.cv { background: var(--ink); }
+.ca { background: #646c77; }
+.ck { background: var(--good); }
+.cu { background: #2f8a62; }
+.when { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 28px; line-height: 1.3; color: var(--ink); }
+.num { font-family: 'Barlow Semi Condensed', 'Arial Narrow', sans-serif; font-weight: 600; font-size: 64px; line-height: 1; color: var(--faint); }
+
+/* presentation shell */
+html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+#stage { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+#deck { width: 1920px; height: 1080px; position: relative; flex: none; transform-origin: center center; }
+.slide { position: absolute; inset: 0; display: none; }
+.slide.on { display: block; }
+section { width: 1920px; height: 1080px; position: relative; overflow: hidden; }
+aside { display: none; }
+#hud { position: fixed; right: 16px; bottom: 12px; font: 14px/1 'Public Sans', Arial, sans-serif; color: #868d96; user-select: none; }
+#notes { position: fixed; left: 0; right: 0; bottom: 0; max-height: 34%; overflow: auto; background: rgba(15,17,19,.96); color: #eceef0; font: 18px/1.5 'Public Sans', Arial, sans-serif; padding: 16px 24px; display: none; border-top: 1px solid #2a2f35; }
+#notes.on { display: block; }
+@media print {
+  @page { size: 1920px 1080px; margin: 0; }
+  html, body { overflow: visible; height: auto; background: #fff; }
+  #stage { position: static; display: block; }
+  #deck { transform: none !important; height: auto; width: 1920px; }
+  .slide { display: block; position: relative; page-break-after: always; break-after: page; }
+  #hud, #notes { display: none !important; }
+}
+</style>
+</head>
+<body>
+<div id="stage"><div id="deck">
+<div class="slide on" data-n="1">
+<section id="cover" class="cover" data-transition="fade">
+<p class="eyebrow">TapeMine · Pilot proposal for a funding committee</p>
+<h1>Coaches who prepare create data no one else has. TapeMine makes that effort worth it.</h1>
+<p class="lede">A pilot with about 100 flag football teams in Europe and the US. Decision needed by January 2027.</p>
+<aside>Open with this, literally: “Flag football goes to the Olympics in 2028, and the teams on that path still prepare with a whiteboard and a hunch. We are betting we can change that, and we will know in eight months for €83,000.” Then stop talking and let the room read the title.
+
+Nine slides: the sport and why now, why this team, what changes for a coach, the process, why trust is the product, the numbers, the kill switch, the ask.</aside>
+</section>
+</div>
+<div class="slide" data-n="2">
+<section id="why-now" class="sf" data-transition="fade">
+<p class="eyebrow">The sport and why now</p>
+<h2>A non-contact 5-on-5 sport, going Olympic.</h2>
+<div class="grid4">
+<div class="card" style="padding: 28px"><p class="stat">2028</p><p class="cb">Olympic debut in Los Angeles in July. NFL owners approved player participation.</p></div>
+<div class="card" style="padding: 28px"><p class="stat">43</p><p class="cb">National teams from 25 nations at a record Euro Flag in 2025.</p></div>
+<div class="card" style="padding: 28px"><p class="stat">~1,000</p><p class="cb">Amateur teams in Europe like those in Austria’s top leagues. Our guess; Austria lists 23 flag clubs.</p></div>
+<div class="card" style="padding: 28px"><p class="stat">~€100</p><p class="cb">Yearly film-software spend per team. Our guess: WatchGameFilm lists $100, Hudl $400 to $1,600.</p></div>
+</div>
+<p class="lede">Teams already pay for film software, which anchors our price. Tooling lags: Hudl lists its formation and series data as 11-man only.</p>
+<p class="src">Sources: CBS Sports, American Football International, Der Standard (23 Austrian flag clubs, undated), WatchGameFilm and Hudl price pages (vendor figures). The ~1,000 and ~€100 are our guesses, not data.</p>
+<aside>For anyone who has never seen it: football with flags instead of tackles, five a side, about forty minutes. Two facts say the sport is professionalizing: the Olympic debut in 2028 and a record Euro Flag. The next two numbers are guesses and must be said as guesses. About 1,000 amateur teams in Europe like those in Austria’s top leagues: the only anchor is Der Standard’s count of 23 flag clubs in Austria (undated), scaled up by our own rough judgement, so replace it with a real count from the national federations. About €100 a year per team on film software: WatchGameFilm lists $100 a year for unlimited film (with a free tier of 10 films), Hudl lists youth football plans at $400 to $1,600 a year, and many amateur teams use the free tiers, so the real average is probably below the list prices. This is the first entry our pricing relates to: €5 to €10 a month is €60 to €120 a year, close to WatchGameFilm and far below Hudl. I could not find the Austrian leagues called FLA and FLL, so I did not use their names; add the real league names once confirmed. The gap: league analytics are thin to nonexistent, and the platforms we looked at store and stream film, but we found none that turns it into a 5-on-5 gameplan. That is not a market survey, so say “the platforms we looked at”.</aside>
+</section>
+</div>
+<div class="slide" data-n="3">
+<section id="journey" data-transition="fade">
+<p class="eyebrow">Why this team · amateur sport</p>
+<h2>One bet on the amateur coach.</h2>
+<div class="grid3">
+<div class="card"><p class="num">1</p><h3 class="ct">Tagging and analysis</h3><p class="cb">Where we started. Useful, and already offered by others, so it cannot be the difference.</p></div>
+<div class="card"><p class="num">2</p><h3 class="ct">An AI-native gameplan</h3><p class="cb">The system drafts a plan from the coach’s own tags. The coach decides and reports back.</p></div>
+<div class="card edge"><p class="num">3</p><h3 class="ct">The behavior bet</h3><p class="cb">Amateur coaches are volunteers with no analyst. Only if they put in more data is this different, and that effort is the moat.</p></div>
+</div>
+<p class="lede">In amateur sport nobody else holds this data. A volunteer coach’s season of confirmed plans and results cannot be copied.</p>
+<aside>[Tell this in your own words: how you started with video tagging and opponent analysis, saw that others already offer it, and ended up on the AI-native gameplan. The punchline is the realization that only the behavior bet makes TapeMine different: it works only if users actually put in more data.] The audience will doubt that this can be a business in an amateur sport, so name it here: coaches are volunteers, budgets are small, and league analytics are thin to nonexistent. That is also the opening, because there is no incumbent data to beat. Concede the summary: WatchGameFilm or Hudl could add one, and the 60 to 70% figure is our own estimate of how much of its value they could replicate. What is hard to copy is the coach’s own effort, kept per team. Our data flywheel scores 5 out of 20 today, and the pilot builds it or kills it.</aside>
+</section>
+</div>
+<div class="slide" data-n="4">
+<section id="saturday" class="sf" data-transition="fade">
+<p class="eyebrow">What changes for a coach</p>
+<h2>Same coach, same game, a different Saturday.</h2>
+<div class="grid2">
+<div class="card"><p class="eyebrow">Today</p><h3 class="ct">Video from the league, watched as an example, then a hunch and calls made on the sideline.</h3><p class="cb">Teams get the film, but it is rarely turned into a plan.</p></div>
+<div class="card">
+<p class="eyebrow">With TapeMine</p>
+<h3 class="ct">A one-page sheet from the opponent’s own film.</h3>
+<div class="row"><div class="mk def"></div><div><p class="rowt">3rd &amp; short · Press the slot, jump the short hook</p><p class="mono">13 of 14 plays · Strong evidence</p></div></div>
+<div class="row"><div class="mk off"></div><div><p class="rowt">3rd &amp; long · Smash to beat two deep</p><p class="mono">8 of 11 plays · Some evidence</p></div></div>
+<p class="cb">Every call links to the plays behind it. Amber is our defense, blue our offense.</p>
+</div>
+</div>
+<aside>Illustrative sheet content from our mock data. The coach confirms every answer; the AI only drafts. Confidence is a count the coach can check, not the AI’s opinion of itself: 13 of 14 plays is strong evidence, and 5 of 5 stays at “some” because five plays could be luck. Every number in a report must also match the number our code computed. This is the behavior change the whole pilot is about: deciding before the game instead of during it.</aside>
+</section>
+</div>
+<div class="slide" data-n="5">
+<section id="prototype" class="sf" data-transition="fade">
+<p class="eyebrow">What it looks like</p>
+<h2>The process, end to end.</h2>
+<div class="grid3">
+<div class="card" style="padding: 28px">
+<p class="eyebrow">1 · Tag the film</p>
+<div class="vw"><p class="mono">G3 · Play 14 · 00:07.4</p></div>
+<p class="eyebrow">Formation</p>
+<div style="display: flex; gap: 8px"><p class="chipx off">Trips Right</p><p class="chipx">Bunch Left</p></div>
+<p class="eyebrow">Result</p>
+<div style="display: flex; gap: 8px"><p class="chipx res">completion</p><p class="chipx">incomplete</p></div>
+</div>
+<div class="card" style="padding: 28px">
+<p class="eyebrow">2 · Read the opponent</p>
+<div class="mini"><div><p class="mt">3rd &amp; short · Quick slant</p><p class="ms">13 of 14 plays · Strong evidence</p></div></div>
+<div class="mini"><div><p class="mt">3rd &amp; long · Deep post</p><p class="ms">11 of 13 plays · Some evidence</p></div></div>
+<p class="gdata">Correction: remove or retag a play</p>
+</div>
+<div class="card" style="padding: 28px">
+<p class="eyebrow">3 · Build the gameplan</p>
+<div class="mini"><div class="mk sm def"></div><div><p class="mt">Press the slot, jump the short hook</p><p class="ms">Suggested</p></div></div>
+<div class="mini"><div class="mk sm off"></div><div><p class="mt">Smash to beat two deep</p><p class="ms">Confirmed by the coach</p></div></div>
+<p class="gdata">Preference: confirm or swap a call</p>
+<p class="gdata">Correction: edit, or doesn’t fit + reason</p>
+<p class="gdata">Domain context: debrief result</p>
+</div>
+</div>
+<p class="src">Process illustration with mock data. The opponent report runs in our first prototype; tagging, the builder and the feedback are designs. Green marks data feedback, typed as in the Module 2 flywheel: correction, preference, domain context.</p>
+<aside>Walk the three columns left to right. One: a coach tags a play from the film with a formation and a result, in seconds. Two: the opponent report turns those tags into ranked tells, each with the plays behind it; if a play does not belong, the coach removes or retags it and the tell recomputes. Three: the gameplan builder drafts calls from the coach’s own playbook, and the coach confirms or changes each one. The green labels name the feedback types from the course’s data flywheel. Correction: the user fixes the AI’s output, which is proprietary training data (removing or retagging a play, editing a call, “doesn’t fit” with a reason). Preference: every confirm or swap builds a taste profile for that coach. Domain context: the after-match debrief (worked, did not, not run) is knowledge about real 5-on-5 situations that a generic model lacks. Be clear about status: the opponent report runs in our first prototype on mock data; the tagging screen, the builder and the feedback are designed and not built. The pilot builds them during the winter break.</aside>
+</section>
+</div>
+<div class="slide" data-n="6">
+<section id="trust" data-transition="fade">
+<p class="eyebrow">Why trust is the product</p>
+<h2>A wrong tell costs a game, so we show our evidence.</h2>
+<div class="grid2">
+<div class="card" style="padding: 28px">
+<p class="eyebrow">Why trust is the product here</p>
+<div class="mini"><div><p class="mt">The stakes are a game</p><p class="ms">A coach changes the defense because of a tell. A wrong tell costs a game.</p></div></div>
+<div class="mini"><div><p class="mt">A summary is easy to copy</p><p class="ms">What is not: evidence on every claim, and a test gate before every release.</p></div></div>
+<div class="mini"><div><p class="mt">It costs almost nothing</p><p class="ms">Code computes the numbers and the AI writes them up: €0.23 of about €3 a month.</p></div></div>
+</div>
+<div class="card" style="padding: 28px">
+<p class="eyebrow">Confidence UX: evidence, not the AI’s opinion</p>
+<div class="mini"><div><p class="mt">Strong evidence · 13 of 14 plays</p><p class="ms">A headline, a counter and a link to the clips.</p></div></div>
+<div class="mini"><div><p class="mt">Some evidence · 5 of 5 plays</p><p class="ms">Hedged wording. The counter is a suggestion.</p></div></div>
+<div class="mini"><div><p class="mt">Not enough film yet · 3 plays</p><p class="ms">No guess, only a prompt to add games.</p></div></div>
+</div>
+</div>
+<p class="src">Tiers come from the lower bound (95%) of each tell’s share. Every number must match the computed value, and a 22-case test set gates releases. A plain computed report is the fallback.</p>
+<aside>Trust is the product because the report speaks for us: like the Air Canada chatbot, what the AI says is what the company said. The design answer is evidence, not a score the model gives itself. A coach can check “13 of 14 plays” and watch the clips; they cannot check “the AI is 92% sure”. 13 of 14 is strong; 5 of 5 stays at “some” because five plays could be luck; three plays is too few to say anything. The coach can change the minimum, see the plays behind any tell, and correct a call, and every correction is data. The reliability contract behind it: accuracy target 92% on the test set, hallucination under 1%, report under 4 seconds, drift under 0.5% a week, and if the narration misbehaves we automatically serve the plain computed report. These are targets we set, not measured results.</aside>
+</section>
+</div>
+<div class="slide" data-n="7">
+<section id="economics" data-transition="fade">
+<p class="eyebrow">The economics, per team per month</p>
+<h2>Video is the cost. AI adds almost nothing.</h2>
+<div style="display: flex; flex-direction: column; gap: 20px">
+<div class="lg">
+<div class="lgi"><div class="sw cv"></div><p class="lgt">Video storage and playback</p></div>
+<div class="lgi"><div class="sw ca"></div><p class="lgt">AI</p></div>
+<div class="lgi"><div class="sw ck"></div><p class="lgt">Kept (gross margin)</p></div>
+<div class="lgi"><div class="sw cu"></div><p class="lgt">Upsell: higher price for better value</p></div>
+</div>
+<div class="eb">
+<p class="ebl">Today, about €10 per team</p>
+<div class="ebar"><div class="cv" style="width: 296px"></div><div class="ck" style="width: 704px"></div></div>
+<p class="ebc">Cost €2.96, all video · kept €7.04 (70%)</p>
+</div>
+<div class="eb">
+<p class="ebl">With AI, at a justified higher price</p>
+<div class="ebar"><div class="cv" style="width: 296px"></div><div class="ca" style="width: 23px"></div><div class="ck" style="width: 681px"></div><div class="cu" style="width: 500px"></div></div>
+<p class="ebc">Price €15 (placeholder) · cost €3.19 (video €2.96, AI €0.23) · kept €11.81 (79%)</p>
+</div>
+</div>
+<p class="cb">Same scale in both bars. At today’s price: AI cost ×3 leaves about 64%, video cost ×2 about 39%, the paid video tier about 19%.</p>
+<p class="src">Our own cost model; token and video prices are placeholders. The €15 is a placeholder for a price justified by better value than other products (WatchGameFilm lists $100 a year, Hudl $400 to $1,600). The pilot holds today’s price.</p>
+<aside>Both bars use the same scale, so you can compare them directly. Top bar: today’s product at about €10 per team per month; the only cost is video, €2.96, and we keep €7.04, about 70%. Bottom bar: with the AI features and a higher price that the better value justifies. The upsell here is that price difference, not a separate product: because the extra price costs nothing to deliver, all of it is margin. AI adds only €0.23 of cost (the scouting report about 4 cents, the gameplan chat about 19 cents). At a placeholder of €15 we keep €11.81, about 79%. The €15 is a placeholder: at €180 a year it sits between WatchGameFilm ($100 a year) and Hudl’s youth plans ($400 to $1,600), and it is only justified if coaches really engage. The pilot holds today’s price, so this is the case we would test afterwards, not part of this ask. Stress tests are at today’s price, the conservative case: AI cost tripling leaves about 64%, video cost doubling about 39%, the paid video tier about 19%. Note for you: our repo cost model (03-the-margin) still assumes today’s price is €5 and €10 with the AI, plus an optional €30 gameplan season pass; make the repo and this slide consistent before presenting. All numbers are estimates from our own model.</aside>
+</section>
+</div>
+<div class="slide" data-n="8">
+<section id="killswitch" class="sf" style="gap: 32px" data-transition="fade">
+<p class="eyebrow">The pilot and the kill switch</p>
+<h2 style="font-size: 64px">Pilot: about 100 amateur teams, half a season, judged on coach engagement before and after the game.</h2>
+<div style="display: flex; flex-direction: column; gap: 24px">
+<div class="row"><p class="when" style="width: 300px">February 2027</p><p class="rowt" style="flex: 1">No league film-access agreement signed</p><p class="rowt" style="width: 440px">We stop before the season.</p></div>
+<div class="row"><p class="when" style="width: 300px">March 2027</p><p class="rowt" style="flex: 1">Fewer than 40 of the 100 teams committed</p><p class="rowt" style="width: 440px">We re-plan the pilot size.</p></div>
+<div class="row"><p class="when" style="width: 300px">Mid-season 2027</p><p class="rowt" style="flex: 1">Before the game: fewer than half of games have a coach-confirmed sheet before kickoff</p><p class="rowt" style="width: 440px">We stop. Spending is limited to the first tranche.</p></div>
+<div class="row"><p class="when" style="width: 300px">Mid-season 2027</p><p class="rowt" style="flex: 1">After the game: fewer than a third of games get a debrief, or fewer than 10 plays tagged a game</p><p class="rowt" style="width: 440px">We stop. Nothing compounds.</p></div>
+</div>
+<p class="src">Size: about 100 teams in Europe and the US. Metric: coach engagement before the game (a confirmed sheet) and after it (debrief, tagged plays). Thresholds are a first proposal; the debrief and tagged-play numbers are placeholders. Winter 2026/27: build and sign the league. Spring 2027: pilot.</p>
+<aside>The pilot in one line: about 100 amateur teams in Europe and the US, half a season, and the critical question is whether amateur coaches engage before and after the game. Before the game: do they confirm a gameplan sheet before kickoff. After the game: do they debrief and tag plays. Price is held, so we are not testing price. Funders trust a plan that shows how it dies. The last two rows are the whole bet: coaches must plan before games and put in the data afterwards. The first two protect the money before the season starts. Timeline: nothing can be tested before the season, and half a season is the least you need to judge behavior, so everything points at one gate in mid-season 2027; the 2028 Olympic-year season is the first honest read on compounding.
+
+If asked about risks: (1) Youth film exposed or misused is the front-page risk: team data is separated by design, individual players are never identified, and a privacy review for the EU and the US is budgeted at about €5,000 and not done yet. (2) A confident wrong tell: every number must match the computed value, a 22-case test set blocks bad releases, and a plain computed report is the fallback. (3) A competitor ships flag scouting: if coaches do not plan before games, a summary is the whole product and we stop.
+
+If asked what we do not know: market size (the pilot measures use, not market size), whether the league’s files contain every play, whether €10 per team works (the pilot holds price), and verified sport statistics.</aside>
+</section>
+</div>
+<div class="slide" data-n="9">
+<section id="ask" class="lt" data-transition="fade">
+<p class="eyebrow">The ask</p>
+<h1 class="h1s">€83k now. €88k only if the gate is passed.</h1>
+<div class="grid3">
+<div class="card"><h3 class="ct">1.6 people</h3><p class="cb">One full-time builder and a 0.6 FTE community and coach-success lead.</p></div>
+<div class="card"><h3 class="ct">About 100 teams</h3><p class="cb">In Europe and the US, with 4 to 6 coach case studies.</p></div>
+<div class="card"><h3 class="ct">The platform, after the gate</h3><p class="cb">Paused until then: deep playbook integration, automated tagging, practice plans from debrief gaps, and player film study.</p></div>
+</div>
+<p class="lede">Decision needed by January 2027, so the pilot is ready when the season starts.</p>
+<p class="src">Cost figures are estimates: builder and lead salaries are placeholders, and the privacy review needs a quote.</p>
+<aside>Say the number, then the condition: the committee decides only on the first tranche. In return you get one measured answer by mid-season: do coaches build and use a gameplan before the game, across about a hundred teams, plus coach case studies, a signed league film agreement and a tested reliability gate. The third card is the direction, not part of this ask: if the gate is passed, TapeMine grows into a flag football platform that gets a team better, with the team’s playbook built into the plans, automated tagging so coaches put in less effort, practice plans drawn from what the debriefs show went wrong, and film study for players. Nothing in the €83k pays for that. Then stop talking. Hardest question you will get first: “Is there a business in amateur flag football?” Answer: we do not know yet, which is why the first €83k buys one measurement, and a team costs about €3 a month to serve, so it works at amateur price levels if coaches use it.</aside>
+</section>
+</div>
+</div></div>
+<div id="notes" aria-live="polite"></div>
+<div id="hud"><span id="pos"></span> · arrows to move · N notes · F fullscreen</div>
+<script>
+(function () {
+  var slides = [].slice.call(document.querySelectorAll('.slide')), i = 0, deck = document.getElementById('deck');
+  function fit() { var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080); deck.style.transform = 'scale(' + s + ')'; }
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) { s.classList.toggle('on', k === i); });
+    document.getElementById('pos').textContent = (i + 1) + ' / ' + slides.length;
+    var a = slides[i].querySelector('aside');
+    document.getElementById('notes').textContent = a ? a.textContent : '';
+    if (history.replaceState) history.replaceState(null, '', '#' + (i + 1));
+  }
+  document.addEventListener('keydown', function (e) {
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'Enter') { e.preventDefault(); show(i + 1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'Backspace') { e.preventDefault(); show(i - 1); }
+    else if (k === 'Home') show(0);
+    else if (k === 'End') show(slides.length - 1);
+    else if (k === 'n' || k === 'N') document.getElementById('notes').classList.toggle('on');
+    else if (k === 'f' || k === 'F') { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); }
+  });
+  document.getElementById('stage').addEventListener('click', function (e) { show(e.clientX < window.innerWidth / 3 ? i - 1 : i + 1); });
+  window.addEventListener('resize', fit);
+  fit();
+  var h = parseInt((location.hash || '').slice(1), 10);
+  show(isNaN(h) ? 0 : h - 1);
+})();
+</script>
+</body>
+</html>
